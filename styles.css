@@ -72,8 +72,9 @@ a {
 .brand-logo {
   display: block;
   width: 172px;
-  height: auto;
-  object-fit: contain;
+  height: 58px;
+  object-fit: cover;
+  object-position: center;
 }
 
 .nav-links {
@@ -1030,9 +1031,12 @@ textarea {
 
 .brand-logo-footer {
   width: 190px;
+  height: 70px;
   background: var(--white);
   border-radius: 12px;
   padding: 8px 10px;
+  object-fit: cover;
+  object-position: center;
 }
 
 .footer p {
@@ -1327,10 +1331,12 @@ textarea {
 
   .brand-logo {
     width: 122px;
+    height: 42px;
   }
 
   .brand-logo-footer {
     width: 172px;
+    height: 64px;
   }
 
   .fleet-visual {
