@@ -57,6 +57,7 @@ quoteForm.addEventListener("submit", (event) => {
     `Destino: ${data.destino || "-"}`,
     `Tipo de carga: ${data.carga || "-"}`,
     `Prazo desejado: ${data.prazo || "-"}`,
+    `Peso aproximado: ${data.peso || "-"} kg`,
     `Observações: ${data.observacoes || "-"}`
   ].join("\n");
 
