@@ -14,11 +14,7 @@
   <header class="site-header" id="topo">
     <nav class="nav container" aria-label="Menu principal">
       <a class="brand" href="#inicio" aria-label="Via Sovrana - Início">
-        <span class="brand-mark">VS</span>
-        <span class="brand-text">
-          <strong>Via Sovrana</strong>
-          <small>Transportes</small>
-        </span>
+        <img class="brand-logo" src="src/logo.png" alt="Via Sovrana" width="1672" height="941" />
       </a>
 
       <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false">
@@ -32,6 +28,7 @@
         <a href="#diferenciais">Diferenciais</a>
         <a href="#servicos">Serviços</a>
         <a href="#rotas">Rotas</a>
+        <a href="#comparativo">Comparativo</a>
         <a href="#frota">Frota</a>
         <a href="#funciona">Como funciona</a>
         <a href="#sobre">Sobre</a>
@@ -47,7 +44,7 @@
           <span class="eyebrow">Coleta no mesmo dia • Entrega D+1 • Rotas pelo interior de SP</span>
           <h1>Coleta no interior de SP hoje. Entrega em São Paulo amanhã.</h1>
           <p>
-            A Via Sovrana faz a coleta na sua empresa em Sorocaba, Boituva, Tatuí, Itapevi, Itu, Salto ou Cerquilho e entrega no destinatário em São Paulo no dia seguinte. Fracionado, com CT-e, seguro de carga incluído e preço até 50% abaixo do mercado convencional.
+            A Via Sovrana faz a coleta em corredores estratégicos do interior paulista e entrega no destinatário em São Paulo no dia seguinte. Fracionado, com CT-e, seguro de carga incluído e preço até 50% abaixo do mercado convencional.
           </p>
           <div class="hero-actions">
             <a class="btn btn-primary" href="#cotacao">Solicitar cotação</a>
@@ -63,30 +60,17 @@
               <span>Abaixo do mercado convencional</span>
             </div>
             <div>
-              <strong>Interior SP</strong>
-              <span>Rotas estratégicas atendidas</span>
+              <strong>Corredores</strong>
+              <span>Rotas do interior para SP</span>
             </div>
           </div>
         </div>
 
-        <div class="hero-visual" aria-label="Ilustração de caminhão Via Sovrana">
+        <div class="hero-visual" aria-label="Caminhão Via Sovrana">
           <div class="speed-line line-1"></div>
           <div class="speed-line line-2"></div>
-          <div class="truck-card">
-            <div class="truck">
-              <div class="truck-box">
-                <span>Via Sovrana</span>
-                <small>Precisão em movimento</small>
-                <div class="orange-arrow"></div>
-              </div>
-              <div class="truck-cab">
-                <div class="window"></div>
-                <div class="headlight"></div>
-              </div>
-              <div class="wheel wheel-one"></div>
-              <div class="wheel wheel-two"></div>
-            </div>
-            <div class="road"></div>
+          <div class="truck-photo-card">
+            <img src="src/caminhao.png" alt="Caminhão baú Via Sovrana" width="1672" height="941" decoding="async" fetchpriority="high" />
           </div>
         </div>
       </div>
@@ -157,8 +141,8 @@
             <p>Retiradas recorrentes para empresas que precisam manter uma rotina logística confiável.</p>
           </article>
           <article class="service-card">
-            <h3>Entregas para o interior</h3>
-            <p>Rotas dedicadas para cidades estratégicas do interior de São Paulo.</p>
+            <h3>Coleta no interior</h3>
+            <p>Buscamos sua carga em cidades atendidas pelos nossos corredores e entregamos em São Paulo no dia seguinte.</p>
           </article>
           <article class="service-card">
             <h3>Cargas leves e fracionadas</h3>
@@ -173,108 +157,195 @@
     </section>
 
     <section class="section navy-section" id="rotas">
-      <div class="container routes-grid">
-        <div>
+      <div class="container">
+        <div class="section-heading">
           <span class="eyebrow light">Rotas</span>
-          <h2>Rotas estratégicas pelo interior de São Paulo</h2>
-          <p>
-            Rota diária com saída do interior e entrega em São Paulo no dia seguinte. Você agenda até às 18h do dia anterior.
-          </p>
-          <a class="btn btn-light" href="#cotacao">Montar minha rota</a>
+          <h2>Corredores estratégicos do interior de SP.</h2>
+          <p>Rota diária com saída do interior e entrega em São Paulo no dia seguinte.<br>Você agenda até às 18h do dia anterior.</p>
         </div>
 
-        <div class="route-map">
-          <div class="route-list" style="position: static; grid-template-columns: 1fr; gap: 10px;">
-            <h3 style="margin: 0 0 6px; color: #ffffff; font-size: 1.15rem;">Corredor Castelo Branco</h3>
-            <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 10px; font-weight: 800; color: #ffffff;">
-              <strong>Cidade</strong>
-              <strong>Frequência</strong>
-              <strong>Entrega</strong>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 2.5rem;">
+          <div style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; padding: 1.75rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+              <strong style="color: #fff; font-size: 15px;">Corredor Castelo Branco</strong>
+              <span style="background: #FF6B1A; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.06em;">Ativo</span>
             </div>
-            <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 10px;">
-              <strong>Itapevi</strong><span>Diária</span><span>D+1</span>
+            <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.08);">
+                <span style="color: rgba(255,255,255,0.85); font-size: 14px;">Itapevi</span>
+                <span style="color: #FF6B1A; font-size: 13px; font-weight: 600;">D+1</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.08);">
+                <span style="color: rgba(255,255,255,0.85); font-size: 14px;">Itu</span>
+                <span style="color: #FF6B1A; font-size: 13px; font-weight: 600;">D+1</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.08);">
+                <span style="color: rgba(255,255,255,0.85); font-size: 14px;">Sorocaba</span>
+                <span style="color: #FF6B1A; font-size: 13px; font-weight: 600;">D+1</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.08);">
+                <span style="color: rgba(255,255,255,0.85); font-size: 14px;">Salto</span>
+                <span style="color: #FF6B1A; font-size: 13px; font-weight: 600;">D+1</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.08);">
+                <span style="color: rgba(255,255,255,0.85); font-size: 14px;">Boituva</span>
+                <span style="color: #FF6B1A; font-size: 13px; font-weight: 600;">D+1</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.08);">
+                <span style="color: rgba(255,255,255,0.85); font-size: 14px;">Cerquilho</span>
+                <span style="color: #FF6B1A; font-size: 13px; font-weight: 600;">D+1</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;">
+                <span style="color: rgba(255,255,255,0.85); font-size: 14px;">Tatuí</span>
+                <span style="color: #FF6B1A; font-size: 13px; font-weight: 600;">D+1</span>
+              </div>
             </div>
-            <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 10px;">
-              <strong>Itu</strong><span>Diária</span><span>D+1</span>
+            <a class="btn btn-light" href="#cotacao" style="display: flex; text-align: center; margin-top: 1.5rem; width: 100%;">Solicitar coleta</a>
+          </div>
+
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 1.75rem; opacity: 0.7;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+              <strong style="color: #fff; font-size: 15px;">Corredor Anhanguera</strong>
+              <span style="background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.6); font-size: 11px; font-weight: 700; padding: 3px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.06em;">Em breve</span>
             </div>
-            <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 10px;">
-              <strong>Sorocaba</strong><span>Diária</span><span>D+1</span>
+            <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                <span style="color: rgba(255,255,255,0.5); font-size: 14px;">Campinas</span>
+                <span style="color: rgba(255,255,255,0.3); font-size: 13px;">—</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                <span style="color: rgba(255,255,255,0.5); font-size: 14px;">Americana</span>
+                <span style="color: rgba(255,255,255,0.3); font-size: 13px;">—</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                <span style="color: rgba(255,255,255,0.5); font-size: 14px;">Limeira</span>
+                <span style="color: rgba(255,255,255,0.3); font-size: 13px;">—</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                <span style="color: rgba(255,255,255,0.5); font-size: 14px;">Piracicaba</span>
+                <span style="color: rgba(255,255,255,0.3); font-size: 13px;">—</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;">
+                <span style="color: rgba(255,255,255,0.5); font-size: 14px;">Rio Claro</span>
+                <span style="color: rgba(255,255,255,0.3); font-size: 13px;">—</span>
+              </div>
             </div>
-            <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 10px;">
-              <strong>Salto</strong><span>Diária</span><span>D+1</span>
-            </div>
-            <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 10px;">
-              <strong>Boituva</strong><span>Diária</span><span>D+1</span>
-            </div>
-            <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 10px;">
-              <strong>Cerquilho</strong><span>Diária</span><span>D+1</span>
-            </div>
-            <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 10px;">
-              <strong>Tatuí</strong><span>Diária</span><span>D+1</span>
+            <div style="margin-top: 1.5rem; text-align: center; color: rgba(255,255,255,0.35); font-size: 13px;">
+              Previsão de expansão 2026
             </div>
           </div>
-          <p style="position: relative; margin-top: 22px; color: rgba(255,255,255,.82);">
-            Entregamos em toda a cidade de São Paulo e Grande SP.
-          </p>
+
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 1.75rem; opacity: 0.7;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+              <strong style="color: #fff; font-size: 15px;">Corredor Bandeirantes</strong>
+              <span style="background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.6); font-size: 11px; font-weight: 700; padding: 3px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.06em;">Em breve</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                <span style="color: rgba(255,255,255,0.5); font-size: 14px;">Jundiaí</span>
+                <span style="color: rgba(255,255,255,0.3); font-size: 13px;">—</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                <span style="color: rgba(255,255,255,0.5); font-size: 14px;">Indaiatuba</span>
+                <span style="color: rgba(255,255,255,0.3); font-size: 13px;">—</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                <span style="color: rgba(255,255,255,0.5); font-size: 14px;">Vinhedo</span>
+                <span style="color: rgba(255,255,255,0.3); font-size: 13px;">—</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                <span style="color: rgba(255,255,255,0.5); font-size: 14px;">Valinhos</span>
+                <span style="color: rgba(255,255,255,0.3); font-size: 13px;">—</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;">
+                <span style="color: rgba(255,255,255,0.5); font-size: 14px;">Itatiba</span>
+                <span style="color: rgba(255,255,255,0.3); font-size: 13px;">—</span>
+              </div>
+            </div>
+            <div style="margin-top: 1.5rem; text-align: center; color: rgba(255,255,255,0.35); font-size: 13px;">
+              Previsão de expansão 2026
+            </div>
+          </div>
         </div>
+
+        <p style="margin-top: 2rem; text-align: center; color: rgba(255,255,255,0.45); font-size: 13px;">
+          Entregamos em toda a cidade de São Paulo e Grande SP.
+        </p>
       </div>
     </section>
 
-    <section class="section navy-section" id="comparativo" hidden>
+    <section class="section navy-section" id="comparativo">
       <div class="container">
         <div class="section-heading">
-          <span class="eyebrow light">Comparativo de preço</span>
-          <h2>Veja o que o mercado cobra pela mesma rota</h2>
-          <p>Dados reais coletados em plataformas de frete em junho de 2025. Prazo do mercado convencional: 6 dias úteis.</p>
+          <span class="eyebrow light">Comparativo de prazo e preço</span>
+          <h2>O mercado cobra mais e demora mais.</h2>
+          <p>Cotações reais coletadas em plataformas de frete em junho de 2025.<br>Prazo do mercado convencional: 6 dias úteis.</p>
         </div>
 
-        <div class="cards" style="grid-template-columns: repeat(4, 1fr);">
-          <article class="card">
-            <span class="icon">1</span>
-            <h3>Itapevi → SP</h3>
-            <p><strong>Peso:</strong> 50 kg</p>
-            <p><strong>Mercado:</strong> R$ 172</p>
-            <p><strong>Via Sovrana:</strong> R$ 181</p>
-            <p><strong>Prazo mercado:</strong> 6 dias úteis</p>
-            <p><strong>Nosso prazo:</strong> D+1</p>
-            <p><strong>Destaque:</strong> Mesmo preço, 6x mais rápido</p>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 2.5rem;">
+
+          <article style="background: #fff; border-radius: 14px; padding: 2rem 1.75rem; text-align: center;">
+            <span style="font-size: 11px; color: #FF6B1A; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">
+              Sorocaba → SP
+            </span>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0;">
+              <div>
+                <div style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">Mercado</div>
+                <div style="font-size: 18px; font-weight: 700; color: #bbb; text-decoration: line-through;">6 dias úteis</div>
+              </div>
+              <div>
+                <div style="font-size: 11px; color: #FF6B1A; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">Via Sovrana</div>
+                <div style="font-size: 28px; font-weight: 800; color: #1B3A6B; line-height: 1;">D+1</div>
+              </div>
+            </div>
+            <span style="display: inline-block; background: #1a7a4a; color: #fff; font-size: 13px; font-weight: 700; padding: 6px 18px; border-radius: 20px;">
+              35% mais barato
+            </span>
           </article>
 
-          <article class="card">
-            <span class="icon">2</span>
-            <h3>Sorocaba → SP</h3>
-            <p><strong>Peso:</strong> 100 kg</p>
-            <p><strong>Mercado:</strong> R$ 333</p>
-            <p><strong>Via Sovrana:</strong> R$ 215</p>
-            <p><strong>Prazo mercado:</strong> 6 dias úteis</p>
-            <p><strong>Nosso prazo:</strong> D+1</p>
-            <p><strong>Destaque:</strong> -35% mais barato</p>
+          <article style="background: #fff; border-radius: 14px; padding: 2rem 1.75rem; text-align: center;">
+            <span style="font-size: 11px; color: #FF6B1A; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">
+              Boituva → SP
+            </span>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0;">
+              <div>
+                <div style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">Mercado</div>
+                <div style="font-size: 18px; font-weight: 700; color: #bbb; text-decoration: line-through;">6 dias úteis</div>
+              </div>
+              <div>
+                <div style="font-size: 11px; color: #FF6B1A; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">Via Sovrana</div>
+                <div style="font-size: 28px; font-weight: 800; color: #1B3A6B; line-height: 1;">D+1</div>
+              </div>
+            </div>
+            <span style="display: inline-block; background: #1a7a4a; color: #fff; font-size: 13px; font-weight: 700; padding: 6px 18px; border-radius: 20px;">
+              50% mais barato
+            </span>
           </article>
 
-          <article class="card">
-            <span class="icon">3</span>
-            <h3>Boituva → SP</h3>
-            <p><strong>Peso:</strong> 150 kg</p>
-            <p><strong>Mercado:</strong> R$ 532</p>
-            <p><strong>Via Sovrana:</strong> R$ 266</p>
-            <p><strong>Prazo mercado:</strong> 6 dias úteis</p>
-            <p><strong>Nosso prazo:</strong> D+1</p>
-            <p><strong>Destaque:</strong> -50% mais barato</p>
+          <article style="background: #fff; border-radius: 14px; padding: 2rem 1.75rem; text-align: center;">
+            <span style="font-size: 11px; color: #FF6B1A; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">
+              Tatuí → SP
+            </span>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0;">
+              <div>
+                <div style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">Mercado</div>
+                <div style="font-size: 18px; font-weight: 700; color: #bbb; text-decoration: line-through;">6 dias úteis</div>
+              </div>
+              <div>
+                <div style="font-size: 11px; color: #FF6B1A; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">Via Sovrana</div>
+                <div style="font-size: 28px; font-weight: 800; color: #1B3A6B; line-height: 1;">D+1</div>
+              </div>
+            </div>
+            <span style="display: inline-block; background: #1a7a4a; color: #fff; font-size: 13px; font-weight: 700; padding: 6px 18px; border-radius: 20px;">
+              23% mais barato
+            </span>
           </article>
 
-          <article class="card">
-            <span class="icon">4</span>
-            <h3>Tatuí → SP</h3>
-            <p><strong>Peso:</strong> 80 kg</p>
-            <p><strong>Mercado:</strong> R$ 256</p>
-            <p><strong>Via Sovrana:</strong> R$ 198</p>
-            <p><strong>Prazo mercado:</strong> 6 dias úteis</p>
-            <p><strong>Nosso prazo:</strong> D+1</p>
-            <p><strong>Destaque:</strong> -23% mais barato</p>
-          </article>
         </div>
 
-        <p style="margin-top: 24px; color: rgba(255,255,255,.72);">Fonte: Central do Frete, cotações realizadas em junho de 2025.</p>
+        <p style="margin-top: 2rem; text-align: center; color: rgba(255,255,255,.45); font-size: 12px;">
+          Cotações realizadas em junho de 2026.
+        </p>
       </div>
     </section>
 
@@ -283,7 +354,7 @@
         <div class="fleet-visual">
           <div class="fleet-card">
             <span class="fleet-label">Frota baú</span>
-            <div class="mini-truck"></div>
+            <img class="fleet-icon" src="src/icone-bau.png" alt="Ícone de caminhão baú" width="1262" height="1262" loading="lazy" decoding="async" />
           </div>
         </div>
 
@@ -291,7 +362,7 @@
           <span class="eyebrow">Frota</span>
           <h2>Frota ágil para cargas empresariais.</h2>
           <p>
-            Operamos com veículo baú leve, ideal para carga fracionada e volumes empresariais. Capacidade para até 1.800 kg por viagem.
+            Operamos com veículo baú leve, ideal para carga fracionada e volumes empresariais.
           </p>
 
           <div class="feature-list">
@@ -328,7 +399,7 @@
           <article>
             <span>2</span>
             <h3>Cotação</h3>
-            <p>A Via Sovrana analisa a melhor solução para sua necessidade.</p>
+            <p>Enviamos a cotação por WhatsApp em até 2 horas. Confirmado o serviço, você nos envia a nota fiscal até as 18h.</p>
           </article>
           <article>
             <span>3</span>
@@ -361,7 +432,10 @@
             A Via Sovrana nasceu para atender empresas que precisam de transporte rápido, organizado e confiável. Nossa proposta é unir agilidade, responsabilidade e comunicação clara em cada entrega.
           </p>
           <p>
-            Nascemos para atender pequenas e médias empresas do interior paulista que precisavam de uma alternativa rápida, acessível e confiável ao transporte convencional. Com preços até 50% menores e prazo D+1, entregamos o que o mercado não conseguia oferecer ao mesmo tempo: velocidade e custo justo.
+            Nascemos para atender pequenas e médias empresas em corredores estratégicos do interior paulista que precisavam de uma alternativa rápida, acessível e confiável ao transporte convencional. Com preços até 50% menores e prazo D+1, entregamos o que o mercado não conseguia oferecer ao mesmo tempo: velocidade e custo justo.
+          </p>
+          <p>
+            Atendemos diretamente — sem call center, sem chatbot. Você fala com quem opera a rota e toma as decisões.
           </p>
         </div>
       </div>
@@ -448,13 +522,9 @@
     <div class="container footer-grid">
       <div>
         <a class="brand footer-brand" href="#inicio">
-          <span class="brand-mark">VS</span>
-          <span class="brand-text">
-            <strong>Via Sovrana</strong>
-            <small>Precisão em movimento</small>
-          </span>
+          <img class="brand-logo brand-logo-footer" src="src/logo.png" alt="Via Sovrana" width="1672" height="941" loading="lazy" decoding="async" />
         </a>
-        <p>Coleta no interior de SP no mesmo dia. Entrega em São Paulo em D+1. Frete expresso com CT-e, seguro incluído e preço justo.</p>
+        <p>Coleta em corredores estratégicos do interior de SP. Entrega em São Paulo em D+1. Frete expresso com CT-e, seguro incluído e preço justo.</p>
       </div>
 
       <div>
@@ -473,6 +543,10 @@
       </div>
     </div>
   </footer>
+
+  <a class="whatsapp-float" href="https://wa.me/5500000000000" target="_blank" rel="noopener" aria-label="Falar pelo WhatsApp">
+    <img src="src/wpp.png" alt="" width="64" height="64" loading="lazy" decoding="async" />
+  </a>
 
   <script src="script.js"></script>
 </body>

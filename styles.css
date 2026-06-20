@@ -1,8 +1,8 @@
 :root {
-  --navy: #1B3A6B;
-  --navy-dark: #10294f;
-  --orange: #FF6B1A;
-  --orange-dark: #df5510;
+  --navy: #00326f;
+  --navy-dark: #001f4c;
+  --orange: #ff4d12;
+  --orange-dark: #d93d08;
   --white: #ffffff;
   --soft: #f5f7fb;
   --soft-2: #eef3f9;
@@ -66,49 +66,14 @@ a {
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  flex: 0 0 auto;
 }
 
-.brand-mark {
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  display: grid;
-  place-items: center;
-  background: var(--navy);
-  color: var(--white);
-  font-weight: 800;
-  letter-spacing: -.04em;
-  position: relative;
-  overflow: hidden;
-}
-
-.brand-mark::after {
-  content: "";
-  position: absolute;
-  width: 52px;
-  height: 9px;
-  background: var(--orange);
-  transform: rotate(-20deg);
-  bottom: 5px;
-  right: -18px;
-}
-
-.brand-text {
-  display: grid;
-  gap: 0;
-}
-
-.brand-text strong {
-  font-size: 1rem;
-  color: var(--navy);
-  line-height: 1.1;
-}
-
-.brand-text small {
-  color: var(--muted);
-  font-size: .78rem;
-  line-height: 1.2;
+.brand-logo {
+  display: block;
+  width: 172px;
+  height: auto;
+  object-fit: contain;
 }
 
 .nav-links {
@@ -360,7 +325,7 @@ h3 {
   min-height: 520px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
 }
 
 .truck-card {
@@ -374,6 +339,37 @@ h3 {
   position: relative;
   overflow: hidden;
   border: 1px solid rgba(220, 228, 239, .8);
+}
+
+.truck-photo-card {
+  width: min(100%, 620px);
+  margin-right: 0;
+  border-radius: 34px;
+  background: var(--white);
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(220, 228, 239, .85);
+}
+
+.truck-photo-card::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 8%;
+  height: 20px;
+  border-radius: 999px;
+  background: rgba(0, 31, 76, .16);
+  filter: blur(14px);
+}
+
+.truck-photo-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  position: relative;
+  z-index: 1;
 }
 
 .truck-card::before {
@@ -810,6 +806,13 @@ h3 {
   position: relative;
 }
 
+.fleet-icon {
+  display: block;
+  width: min(78%, 320px);
+  height: auto;
+  object-fit: contain;
+}
+
 .fleet-label {
   position: absolute;
   left: 24px;
@@ -1025,9 +1028,11 @@ textarea {
   gap: 40px;
 }
 
-.footer .brand-text strong,
-.footer .brand-text small {
-  color: var(--white);
+.brand-logo-footer {
+  width: 190px;
+  background: var(--white);
+  border-radius: 12px;
+  padding: 8px 10px;
 }
 
 .footer p {
@@ -1046,6 +1051,35 @@ textarea {
   margin-bottom: 10px;
 }
 
+.whatsapp-float {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 80;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: #1fb65b;
+  color: var(--white);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 18px 38px rgba(31, 182, 91, .34);
+  transition: transform .18s ease, box-shadow .18s ease;
+  overflow: hidden;
+}
+
+.whatsapp-float:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 22px 44px rgba(31, 182, 91, .42);
+}
+
+.whatsapp-float img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 @media (max-width: 1060px) {
   .nav-links {
     gap: 14px;
@@ -1062,6 +1096,7 @@ textarea {
 
   .hero-visual {
     min-height: 420px;
+    justify-content: center;
   }
 
   .steps {
@@ -1076,6 +1111,11 @@ textarea {
     grid-row: auto;
     min-height: 260px;
   }
+
+  #rotas .container > div[style*="grid-template-columns"],
+  #comparativo .container > div[style*="grid-template-columns"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
 }
 
 @media (max-width: 860px) {
@@ -1085,6 +1125,7 @@ textarea {
 
   .nav {
     min-height: 72px;
+    gap: 16px;
   }
 
   .nav-links {
@@ -1133,7 +1174,33 @@ textarea {
   }
 
   .hero {
+    min-height: auto;
     padding-top: 54px;
+    padding-bottom: 52px;
+  }
+
+  h1 {
+    font-size: clamp(2.55rem, 11vw, 4rem);
+    line-height: 1;
+    letter-spacing: -.055em;
+  }
+
+  h2 {
+    font-size: clamp(2rem, 8vw, 2.8rem);
+    letter-spacing: -.045em;
+  }
+
+  .hero-grid {
+    gap: 36px;
+  }
+
+  .hero-copy p,
+  .section-heading p,
+  .split-grid p,
+  .about-grid p,
+  .cta-copy p,
+  .routes-grid p {
+    font-size: 1rem;
   }
 
   .hero-stats,
@@ -1158,6 +1225,20 @@ textarea {
   .route-list {
     bottom: 24px;
   }
+
+  .fleet-visual {
+    min-height: 320px;
+  }
+
+  #rotas .container > div[style*="grid-template-columns"],
+  #comparativo .container > div[style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  #rotas .section-heading p br,
+  #comparativo .section-heading p br {
+    display: none;
+  }
 }
 
 @media (max-width: 560px) {
@@ -1166,15 +1247,73 @@ textarea {
   }
 
   h1 {
-    font-size: 3rem;
+    font-size: clamp(2.35rem, 13vw, 3rem);
+    margin-bottom: 18px;
+  }
+
+  h2 {
+    font-size: clamp(1.9rem, 10vw, 2.35rem);
+  }
+
+  .eyebrow {
+    font-size: .68rem;
+    letter-spacing: .09em;
+    margin-bottom: 12px;
+  }
+
+  .eyebrow::before {
+    width: 22px;
+  }
+
+  .section {
+    padding: 64px 0;
+  }
+
+  .hero {
+    padding-top: 38px;
+  }
+
+  .hero-copy p {
+    font-size: 1rem;
+    margin-bottom: 24px;
   }
 
   .hero-actions {
     display: grid;
+    gap: 10px;
+  }
+
+  .btn {
+    width: 100%;
+    min-height: 50px;
+    padding: 0 18px;
   }
 
   .hero-visual {
-    min-height: 360px;
+    min-height: 260px;
+    margin-top: -8px;
+  }
+
+  .truck-photo-card {
+    width: 100%;
+    margin-right: 0;
+  }
+
+  .speed-line {
+    display: none;
+  }
+
+  .hero-stats {
+    gap: 10px;
+  }
+
+  .hero-stats div {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .hero-stats strong {
+    font-size: 1.05rem;
   }
 
   .truck-card {
@@ -1186,8 +1325,35 @@ textarea {
     transform: translate(-50%, -50%) scale(.66);
   }
 
-  .brand-text small {
-    display: none;
+  .brand-logo {
+    width: 122px;
+  }
+
+  .brand-logo-footer {
+    width: 172px;
+  }
+
+  .fleet-visual {
+    min-height: 0;
+    height: 220px;
+    border-radius: 22px;
+    padding: 18px;
+  }
+
+  .fleet-card {
+    width: min(70%, 230px);
+    border-radius: 20px;
+  }
+
+  .fleet-label {
+    left: 16px;
+    top: 16px;
+    padding: 6px 12px;
+    font-size: .76rem;
+  }
+
+  .fleet-icon {
+    width: min(76%, 190px);
   }
 
   .route-map {
@@ -1203,5 +1369,38 @@ textarea {
   .quote-form {
     padding: 22px;
     border-radius: 24px;
+  }
+
+  .whatsapp-float {
+    right: 16px;
+    bottom: 16px;
+    width: 56px;
+    height: 56px;
+  }
+
+  #rotas .container > div[style*="grid-template-columns"],
+  #comparativo .container > div[style*="grid-template-columns"] {
+    gap: 1rem !important;
+    margin-top: 1.5rem !important;
+  }
+
+  #rotas .container > div[style*="grid-template-columns"] > div,
+  #comparativo article {
+    padding: 1.25rem !important;
+    border-radius: 12px !important;
+  }
+
+  #rotas .container > div[style*="grid-template-columns"] > div > div:first-child {
+    align-items: flex-start !important;
+    gap: 10px;
+  }
+
+  #rotas .container > div[style*="grid-template-columns"] strong {
+    line-height: 1.25;
+  }
+
+  #comparativo article > div[style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+    gap: .75rem !important;
   }
 }
