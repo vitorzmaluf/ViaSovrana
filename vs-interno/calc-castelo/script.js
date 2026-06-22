@@ -1,156 +1,3 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Calculadora de Frete — Via Sovrana</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: sans-serif; background: var(--bg); color: var(--tx); min-height: 100vh; padding-bottom: 60px; transition: background 0.2s, color 0.2s; }
-
-    /* ── TEMAS ── */
-    body.dark {
-      --bg:#0d0d0d; --bgH:#111; --bgC:#141414; --bgI:#111;
-      --bd:#1e1e1e; --bdM:#222; --bdS:#1a1a1a;
-      --tx:#e5e5e5; --txM:#ccc; --txS:#aaa; --txF:#666; --txG:#555; --txT:#444;
-      --ac:#eab308; --acD:#a37b00; --tabC:#000;
-    }
-    body.lite {
-      --bg:#f4f4f5; --bgH:#ffffff; --bgC:#ffffff; --bgI:#f9f9f9;
-      --bd:#e4e4e7; --bdM:#d4d4d8; --bdS:#e4e4e7;
-      --tx:#111111; --txM:#333; --txS:#555; --txF:#777; --txG:#888; --txT:#aaa;
-      --ac:#d97706; --acD:#92400e; --tabC:#ffffff;
-    }
-
-    /* ── LAYOUT ── */
-    .header { background: var(--bgH); border-bottom: 1px solid var(--bd); padding: 18px 20px 14px; }
-    .header-inner { max-width: 900px; margin: 0 auto; display: flex; justify-content: space-between; align-items: flex-start; }
-    .header-title { font-size: 24px; font-weight: 800; color: var(--ac); margin: 0; }
-    .header-sub { color: var(--txG); font-size: 12px; margin: 4px 0 0; }
-    .header-meta { font-size: 10px; color: var(--txT); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 3px; }
-    .theme-btn { padding: 8px 14px; border-radius: 8px; border: 1px solid var(--bdM); background: var(--bgC); color: var(--txS); cursor: pointer; font-size: 13px; font-weight: 600; margin-top: 4px; }
-
-    .wrap { max-width: 900px; margin: 0 auto; padding: 0 14px; }
-
-    /* ── TABS ── */
-    .tabs { display: flex; gap: 4px; margin: 16px 0 20px; background: var(--bgH); border-radius: 8px; padding: 4px; flex-wrap: wrap; }
-    .tab-btn { flex: 1 1 auto; padding: 8px 6px; border-radius: 6px; border: none; cursor: pointer; font-size: 12px; font-weight: 600; background: transparent; color: var(--txG); transition: all 0.15s; }
-    .tab-btn.active { background: var(--ac); color: var(--tabC); }
-
-    /* ── SECTION HEADING ── */
-    .sec-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-    .sec-title { font-size: 12px; font-weight: 700; color: var(--ac); text-transform: uppercase; letter-spacing: 0.1em; }
-    .sec-line { flex: 1; height: 1px; background: var(--bdM); }
-    .sec-body { background: var(--bgC); border: 1px solid var(--bd); border-radius: 8px; padding: 16px 16px 4px; margin-bottom: 22px; }
-
-    /* ── GRID ── */
-    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-    .grid4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; }
-    .grid5 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 10px; }
-    .grid2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-
-    /* ── BOTÕES DE CIDADE / ZONA ── */
-    .city-btn, .zone-btn, .simple-btn {
-      padding: 8px; border-radius: 6px; border: 1px solid var(--bdM);
-      background: var(--bgI); color: var(--txG);
-      cursor: pointer; font-size: 11px; font-weight: 600; text-align: left;
-      transition: all 0.15s; width: 100%;
-    }
-    .city-btn .sub { font-size: 10px; margin-top: 2px; color: var(--txT); }
-    .city-btn.active { border-color: var(--ac); background: color-mix(in srgb, var(--ac) 13%, transparent); color: var(--ac); }
-    .city-btn.active .sub { color: var(--acD); }
-
-    /* ── SLIDER ── */
-    .num-wrap { margin-bottom: 16px; }
-    .num-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-    .num-label { color: var(--txG); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
-    .num-hint { color: var(--txT); font-size: 10px; margin-left: 8px; }
-    .num-input { width: 100%; background: var(--bgI); border: 1px solid var(--bdM); border-radius: 6px; color: var(--tx); padding: 8px 12px; font-size: 14px; font-weight: 600; font-family: monospace; text-align: right; }
-    .num-input:focus { outline: none; border-color: var(--ac); }
-
-    /* ── CARDS ── */
-    .stat-card { background: var(--bgC); border: 1px solid var(--bd); border-radius: 8px; padding: 12px; }
-    .stat-label { font-size: 10px; color: var(--txG); text-transform: uppercase; margin-bottom: 4px; }
-    .stat-val { font-family: monospace; font-size: 16px; font-weight: 700; }
-
-    /* ── DRE ROW ── */
-    .dre-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--bdS); }
-    .dre-label { color: var(--txF); font-size: 12px; }
-    .dre-val { font-family: monospace; font-size: 12px; }
-    .dre-val.bold { font-size: 14px; font-weight: 700; }
-
-    /* ── RESULTADO ── */
-    .result-box { background: var(--bgC); border: 1px solid color-mix(in srgb, var(--ac) 27%, transparent); border-radius: 10px; padding: 20px; margin-bottom: 14px; }
-    .result-price { font-size: 52px; font-weight: 800; font-family: monospace; color: var(--ac); line-height: 1; }
-    .ref-badge { margin-top: 8px; font-size: 12px; padding: 6px 10px; background: var(--bgI); border-radius: 6px; display: inline-block; }
-
-    /* ── TABELA ── */
-    table { width: 100%; border-collapse: collapse; font-size: 12px; }
-    th { padding: 9px 12px; text-align: left; color: var(--txG); font-weight: 600; font-size: 11px; border-bottom: 1px solid var(--bd); background: var(--bgC); }
-    th:not(:first-child) { text-align: right; }
-    td { padding: 9px 12px; border-bottom: 1px solid var(--bd); }
-    td:not(:first-child) { text-align: right; font-family: monospace; color: var(--txM); }
-    tr:nth-child(even) td { background: color-mix(in srgb, var(--bdS) 30%, transparent); }
-
-    /* ── CLIENTE ROW ── */
-    .cliente-row { background: var(--bgC); border: 1px solid var(--bd); border-radius: 8px; padding: 14px 16px; margin-bottom: 10px; }
-    .cliente-grid { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; align-items: center; }
-    .field-label { font-size: 10px; color: var(--txG); text-transform: uppercase; margin-bottom: 6px; }
-    select, input[type=number] { width: 100%; background: var(--bgI); border: 1px solid var(--bdM); border-radius: 6px; color: var(--tx); padding: 7px 10px; font-size: 12px; cursor: pointer; }
-    .rem-btn { background: transparent; border: 1px solid var(--bdM); border-radius: 6px; color: var(--txG); cursor: pointer; padding: 7px 12px; font-size: 14px; margin-top: 20px; }
-    .add-btn { width: 100%; padding: 10px; background: transparent; border: 1px dashed var(--bdM); border-radius: 8px; color: var(--txG); cursor: pointer; font-size: 13px; margin-top: 8px; }
-    .cliente-footer { display: flex; gap: 16px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--bd); flex-wrap: wrap; align-items: center; }
-
-    /* ── WARN ── */
-    .warn { margin-top: 14px; padding: 12px 16px; background: rgba(251,146,60,0.08); border: 1px solid rgba(251,146,60,0.3); border-radius: 8px; font-size: 12px; color: #fb923c; }
-
-    /* ── PROPOSTA ── */
-    .verdict-box { border-radius: 10px; padding: 18px 20px; margin-bottom: 16px; }
-    .verdict-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; }
-    .ref-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--bdS); }
-    .ref-row-label { color: var(--txS); font-size: 11px; }
-    .ref-row-hint { color: var(--txT); font-size: 10px; }
-    .contra-box { margin-top: 12px; padding: 12px 14px; border-radius: 6px; }
-    .contra-label { font-size: 10px; text-transform: uppercase; margin-bottom: 4px; }
-    .contra-val { font-family: monospace; font-size: 20px; font-weight: 800; color: var(--ac); }
-
-    @media (max-width: 640px) {
-      .grid2 { grid-template-columns: 1fr; }
-      .grid5 { grid-template-columns: 1fr 1fr; }
-      .cliente-grid { grid-template-columns: 1fr 1fr; }
-      .result-price { font-size: 36px; }
-    }
-  </style>
-</head>
-<body class="dark">
-
-<div class="header">
-  <div class="header-inner">
-    <div>
-      <div class="header-meta">Via Sovrana · Calculadora Interna · Uso exclusivo</div>
-      <h1 class="header-title">Calculadora de Frete</h1>
-      <p class="header-sub">R$ 1,54/kg + taxa fixa por cidade · coleta no dia · entrega D+1</p>
-    </div>
-    <button class="theme-btn" id="themeBtn">☀ Claro</button>
-  </div>
-</div>
-
-<div class="wrap">
-
-  <div class="tabs" id="tabs">
-    <button class="tab-btn active" data-tab="simulador">Envio Único</button>
-    <button class="tab-btn" data-tab="dia">Simular Dia</button>
-    <button class="tab-btn" data-tab="tabela">Tabela</button>
-    <button class="tab-btn" data-tab="desconto">Proposta Cliente</button>
-    <button class="tab-btn" data-tab="custos">Custos</button>
-  </div>
-
-  <div id="content"></div>
-
-</div>
-
-<script>
 // ── DADOS ──────────────────────────────────────────────────────────────────
 const LP = 0.0593, RKG = 1.54;
 const ICMS_ALIQ = 0.12, ICMS_CRED = 0.20, ICMS_EFET = ICMS_ALIQ * (1 - ICMS_CRED); // 9,6% efetivo com crédito outorgado · Decreto SP 70.292/2025 · válido até 31/12/2026
@@ -179,12 +26,13 @@ const S = {
   cidade: "sorocaba", zona: "z1", peso: 100,
   // Dia
   clientes: [
-    { id:1, cidade:"boituva",  zona:"z1", peso:80  },
-    { id:2, cidade:"tatui",    zona:"z2", peso:100 },
-    { id:3, cidade:"sorocaba", zona:"z1", peso:120 },
-    { id:4, cidade:"itapevi",  zona:"z3", peso:60  },
+    // Dados padrão para teste:
+    // { id:1, cidade:"boituva",  zona:"z1", peso:80  },
+    // { id:2, cidade:"tatui",    zona:"z2", peso:100 },
+    // { id:3, cidade:"sorocaba", zona:"z1", peso:120 },
+    // { id:4, cidade:"itapevi",  zona:"z3", peso:60  },
   ],
-  nextId: 5,
+  nextId: 1,
   // Proposta
   dcCidade:"sorocaba", dcZona:"z1", dcPeso:100, dcProposta:200, dcPesoDia:350,
   // Custos
@@ -221,22 +69,25 @@ function secHead(title) {
   return `<div class="sec-head"><span class="sec-title">${title}</span><div class="sec-line"></div></div>`;
 }
 
+function inputVal(val) {
+  return Number.isFinite(val) ? String(val).replace(".", ",") : "";
+}
+
 function numInput(id, label, val, hint, type) {
   return `
     <div class="num-wrap">
       <div class="num-row">
         <div><span class="num-label">${label}</span>${hint?`<span class="num-hint">${hint}</span>`:""}</div>
       </div>
-      <input class="num-input" type="number" id="${id}" value="${val}"
-        step="${type==="brl"?5:type==="kg"?1:0.1}"
-        data-state="${id}"
-        oninput="onNumInput('${id}',this.value)">
+      <input class="num-input" type="text" inputmode="decimal" id="${id}" value="${inputVal(val)}"
+        autocomplete="off" data-state="${id}">
     </div>`;
 }
 
 function cidadeBtns(selected, prefix) {
   return `<div class="grid2x2">` + CIDADES.map(c => `
     <button class="city-btn${selected===c.id?" active":""}"
+      data-city-id="${c.id}"
       onclick="pick('${prefix}','${c.id}')">
       ${c.label}
       <div class="sub">${c.km} km · taxa ${fmt(c.fixa)}</div>
@@ -246,6 +97,7 @@ function cidadeBtns(selected, prefix) {
 function zonaBtns(selected, prefix) {
   return `<div class="grid2x2">` + ZONAS.map(z => `
     <button class="city-btn${selected===z.id?" active":""}"
+      data-zone-id="${z.id}"
       style="${selected===z.id?`border-color:${z.cor};color:${z.cor};background:${z.cor}22`:""}"
       onclick="pick('${prefix}z','${z.id}')">
       ${z.label} — ${fmt(z.taxa)}
@@ -294,6 +146,9 @@ function renderSimulador() {
           ].map(([l,v])=>`
           <div class="stat-card"><div class="stat-label">${l}</div><div class="stat-val" style="font-size:13px;color:var(--txM)">${v}</div></div>`).join("")}
         </div>
+        <button class="add-btn" style="margin-top:14px;border-style:solid;color:var(--ac);border-color:color-mix(in srgb,var(--ac) 45%,transparent);" onclick="addEnvioUnicoAoDia('${S.cidade}','${S.zona}')">
+          + Adicionar ao Simular Dia
+        </button>
       </div>
       <div style="background:var(--bgH);border:1px solid var(--bd);border-radius:8px;padding:14px 16px;">
         <div style="font-size:10px;color:var(--txT);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;">Composição do frete · impacto tributário</div>
@@ -327,7 +182,7 @@ function renderDia() {
     const custo = pesoTotal>0?(x.peso/pesoTotal)*cd:0;
     const lucro = r.cobrado-imp-icms-custo;
     const margem = r.cobrado>0?(lucro/r.cobrado)*100:0;
-    return {...x,...r,icms,imp,custo,lucro,margem};
+    return {...r,...x,icms,imp,custo,lucro,margem};
   });
   const recTotal    = linhas.reduce((a,l)=>a+l.cobrado,0);
   const icmsTotal   = linhas.reduce((a,l)=>a+l.icms,0);
@@ -367,7 +222,8 @@ function renderDia() {
           </div>
           <div>
             <div class="field-label">Peso (kg)</div>
-            <input type="number" min="1" max="900" value="${l.peso}"
+            <input type="text" inputmode="decimal" value="${inputVal(l.peso)}"
+              autocomplete="off"
               data-action="peso" data-id="${l.id}">
           </div>
           <button class="rem-btn" onclick="remCliente(${l.id})">✕</button>
@@ -606,7 +462,9 @@ function render() {
 
 function attachEvents() {
   document.querySelectorAll(".num-input[data-state]").forEach(el => {
-    el.addEventListener("input", function() { onNumInput(this.dataset.state, this.value); });
+    el.addEventListener("input", function() {
+      onNumInput(this.dataset.state, this.value, this.selectionStart);
+    });
   });
 
 }
@@ -618,8 +476,18 @@ const STATE_MAP = {
   dcPeso:"dcPeso", dcProposta:"dcProposta", dcPesoDia:"dcPesoDia",
 };
 
-function onNumInput(id, val) {
-  const v = parseFloat(val) || 0;
+function parsePtNumber(val, fallback = 0) {
+  const cleaned = String(val)
+    .trim()
+    .replace(/[^\d.,-]/g, "")
+    .replace(/\.(?=\d{3}(?:\D|$))/g, "")
+    .replace(",", ".");
+  const parsed = Number.parseFloat(cleaned);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function onNumInput(id, val, caretPos) {
+  const v = parsePtNumber(val);
   if (STATE_MAP[id] !== undefined) S[STATE_MAP[id]] = v;
   const map = { simulador:renderSimulador, dia:renderDia, desconto:renderDesconto, custos:renderCustos };
   if (map[S.tab]) {
@@ -628,7 +496,12 @@ function onNumInput(id, val) {
     attachEvents();
     if (focused) {
       const el = document.getElementById(focused) || document.querySelector(`[data-state="${focused}"]`);
-      if (el) { el.focus(); el.select(); }
+      if (el) {
+        el.focus();
+        el.value = val;
+        const pos = Math.min(caretPos ?? val.length, val.length);
+        el.setSelectionRange(pos, pos);
+      }
     }
   }
 }
@@ -650,6 +523,22 @@ function addCliente() {
   render();
 }
 
+function addEnvioUnicoAoDia(cidadeAtual = S.cidade, zonaAtual = S.zona) {
+  const pesoInput = document.getElementById("peso");
+  const peso = Math.max(1, parsePtNumber(pesoInput ? pesoInput.value : S.peso, S.peso));
+
+  S.clientes.push({
+    id: S.nextId++,
+    cidade: cidadeAtual,
+    zona: zonaAtual,
+    peso,
+  });
+  S.cidade = "sorocaba";
+  S.zona = "z1";
+  S.peso = 100;
+  render();
+}
+
 function remCliente(id) {
   S.clientes = S.clientes.filter(x => x.id !== id);
   render();
@@ -668,7 +557,7 @@ function updCliente(id, key, val) {
       const custo = pesoTotal>0?(x.peso/pesoTotal)*cd:0;
       const lucro = r.cobrado-imp-icms-custo;
       const margem = r.cobrado>0?(lucro/r.cobrado)*100:0;
-      return {...x,...r,icms,imp,custo,lucro,margem};
+      return {...r,...x,icms,imp,custo,lucro,margem};
     });
   })();
   const recTotal  = linhas.reduce((a,l)=>a+l.cobrado,0);
@@ -699,6 +588,12 @@ function updCliente(id, key, val) {
   });
 }
 
+window.pick = pick;
+window.pickDc = pickDc;
+window.addCliente = addCliente;
+window.addEnvioUnicoAoDia = addEnvioUnicoAoDia;
+window.remCliente = remCliente;
+
 // ── TABS ───────────────────────────────────────────────────────────────────
 document.getElementById("tabs").addEventListener("click", e => {
   const btn = e.target.closest(".tab-btn");
@@ -721,12 +616,13 @@ document.getElementById("content").addEventListener("change", function(e) {
   const action = el.dataset.action;
   const id = parseInt(el.dataset.id);
   if (!action || !id) return;
-  if (action === "peso") updCliente(id, "peso", Math.max(1, Number(el.value)));
+  if (action === "peso") {
+    const peso = Math.max(1, parsePtNumber(el.value, 1));
+    el.value = inputVal(peso);
+    updCliente(id, "peso", peso);
+  }
   else updCliente(id, action, el.value);
 });
 
 // ── INIT ───────────────────────────────────────────────────────────────────
 render();
-</script>
-</body>
-</html>
