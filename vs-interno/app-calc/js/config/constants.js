@@ -4,8 +4,8 @@
  * Dados de domínio (tarifas) vêm da API — aqui ficam só referências de UI.
  */
 
-export const API_BASE = 'http://localhost:3000'; // API_BASE para rodar local
-// export const API_BASE = 'https://darkorchid-bison-969577.hostingersite.com'; // API_BASE para rodar no servidor hostinger
+// export const API_BASE = 'http://localhost:3000'; // API_BASE para rodar local
+export const API_BASE = 'https://darkorchid-bison-969577.hostingersite.com'; // API_BASE para rodar no servidor hostinger
 
 // Cores semânticas usadas nos renders
 export const COLOR = Object.freeze({
