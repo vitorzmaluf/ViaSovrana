@@ -62,14 +62,12 @@
     .city-btn.active .sub { color: var(--acD); }
 
     /* ── SLIDER ── */
-    .slider-wrap { margin-bottom: 16px; }
-    .slider-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
-    .slider-label { color: var(--txG); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
-    .slider-hint { color: var(--txT); font-size: 10px; margin-left: 8px; }
-    .slider-val { font-family: monospace; color: var(--ac); font-size: 13px; font-weight: 600; }
-    input[type=range] { width: 100%; accent-color: var(--ac); cursor: pointer; }
-    .slider-minmax { display: flex; justify-content: space-between; margin-top: 2px; }
-    .slider-minmax span { color: var(--txT); font-size: 10px; }
+    .num-wrap { margin-bottom: 16px; }
+    .num-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .num-label { color: var(--txG); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .num-hint { color: var(--txT); font-size: 10px; margin-left: 8px; }
+    .num-input { width: 100%; background: var(--bgI); border: 1px solid var(--bdM); border-radius: 6px; color: var(--tx); padding: 8px 12px; font-size: 14px; font-weight: 600; font-family: monospace; text-align: right; }
+    .num-input:focus { outline: none; border-color: var(--ac); }
 
     /* ── CARDS ── */
     .stat-card { background: var(--bgC); border: 1px solid var(--bd); border-radius: 8px; padding: 12px; }
@@ -155,6 +153,7 @@
 <script>
 // ── DADOS ──────────────────────────────────────────────────────────────────
 const LP = 0.0593, RKG = 1.54;
+const ICMS_ALIQ = 0.12, ICMS_CRED = 0.20, ICMS_EFET = ICMS_ALIQ * (1 - ICMS_CRED); // 9,6% efetivo com crédito outorgado · Decreto SP 70.292/2025 · válido até 31/12/2026
 
 const CIDADES = [
   { id:"itapevi",   label:"Itapevi",   km:40,  fixa:90,  ref:201  },
@@ -208,25 +207,30 @@ function calcFrete(peso, cidadeId, zonaId) {
 function custoDia() {
   return (340/11)*S.diesel + S.motorista + S.segVei + S.manut + S.parcela + S.pedagios + S.segCarga;
 }
+function custoVar() {
+  // Custos que variam com a viagem (combustível, pedágios, seguro carga)
+  return (340/11)*S.diesel + S.pedagios + S.segCarga;
+}
+function custoFixo() {
+  // Custos fixos independentes do número de clientes (motorista, seguro veículo, manutenção, parcela)
+  return S.motorista + S.segVei + S.manut + S.parcela;
+}
 
 // ── RENDER HELPERS ─────────────────────────────────────────────────────────
 function secHead(title) {
   return `<div class="sec-head"><span class="sec-title">${title}</span><div class="sec-line"></div></div>`;
 }
 
-function sliderHTML(id, label, min, max, step, val, hint, formatFn) {
-  const display = formatFn ? formatFn(val) : val;
-  const minD = formatFn ? formatFn(min) : min;
-  const maxD = formatFn ? formatFn(max) : max;
+function numInput(id, label, val, hint, type) {
   return `
-    <div class="slider-wrap">
-      <div class="slider-row">
-        <div><span class="slider-label">${label}</span>${hint?`<span class="slider-hint">${hint}</span>`:""}</div>
-        <span class="slider-val" id="${id}_val">${display}</span>
+    <div class="num-wrap">
+      <div class="num-row">
+        <div><span class="num-label">${label}</span>${hint?`<span class="num-hint">${hint}</span>`:""}</div>
       </div>
-      <input type="range" min="${min}" max="${max}" step="${step}" value="${val}" id="${id}"
-        oninput="onSlider('${id}',this.value)">
-      <div class="slider-minmax"><span>${minD}</span><span>${maxD}</span></div>
+      <input class="num-input" type="number" id="${id}" value="${val}"
+        step="${type==="brl"?5:type==="kg"?1:0.1}"
+        data-state="${id}"
+        oninput="onNumInput('${id}',this.value)">
     </div>`;
 }
 
@@ -251,14 +255,14 @@ function zonaBtns(selected, prefix) {
 
 // ── TAB: ENVIO ÚNICO ───────────────────────────────────────────────────────
 function renderSimulador() {
-  const r = calcFrete(S.peso, S.cidade, S.zona);
-  const cd = custoDia();
-  const imp = r.cobrado * LP;
-  const custo = (S.peso/350)*cd;
-  const lucro = r.cobrado - imp - custo;
-  const margem = r.cobrado > 0 ? (lucro/r.cobrado)*100 : 0;
-  const diffM = r.cidade.ref ? ((r.cobrado - r.cidade.ref)/r.cidade.ref*100) : null;
-  const zona = ZONAS.find(z => z.id === S.zona);
+  const r         = calcFrete(S.peso, S.cidade, S.zona);
+  const icms      = r.cobrado * ICMS_EFET;
+  const imp       = r.cobrado * LP;
+  const tributos  = icms + imp;
+  const recLiq    = r.cobrado - tributos;
+  const margBruta = r.cobrado > 0 ? (recLiq / r.cobrado) * 100 : 0;
+  const diffM     = r.cidade.ref ? ((r.cobrado - r.cidade.ref) / r.cidade.ref * 100) : null;
+  const zona      = ZONAS.find(z => z.id === S.zona);
 
   return `<div class="grid2">
     <div>
@@ -270,7 +274,7 @@ function renderSimulador() {
         <div style="font-size:11px;color:var(--txT);padding:6px 0 2px;">${zona.desc}</div>
       </div>
       ${secHead("Peso")}
-      <div class="sec-body">${sliderHTML("peso","Peso do envio",1,900,1,S.peso,null,fmtKg)}</div>
+      <div class="sec-body">${numInput("peso","Peso do envio",S.peso,null,"kg")}</div>
     </div>
     <div>
       <div class="result-box">
@@ -281,22 +285,27 @@ function renderSimulador() {
           <span style="font-family:monospace;color:${diffM<=0?"#4ade80":"#f87171"};font-weight:700">
             ${fmt(r.cidade.ref)} (${diffM>0?"+":""}${fmtN(diffM,1)}%)
           </span></div>` : ""}
-        <div class="grid3" style="margin-top:10px;">
-          ${[["R$/kg efetivo","R$ "+fmtN(r.efetKg,2)],["Taxa fixa",fmt(r.cidade.fixa)],["Entrega",fmt(r.zona.taxa)]].map(([l,v])=>`
+        <div class="grid4" style="margin-top:10px;">
+          ${[
+            ["R$/kg efetivo",  "R$ "+fmtN(r.efetKg,2)],
+            ["Taxa fixa",      fmt(r.cidade.fixa)],
+            ["Entrega",        fmt(r.zona.taxa)],
+            ["Tributos",       fmtN((ICMS_EFET+LP)*100,1)+"%"],
+          ].map(([l,v])=>`
           <div class="stat-card"><div class="stat-label">${l}</div><div class="stat-val" style="font-size:13px;color:var(--txM)">${v}</div></div>`).join("")}
         </div>
       </div>
       <div style="background:var(--bgH);border:1px solid var(--bd);border-radius:8px;padding:14px 16px;">
-        <div style="font-size:10px;color:var(--txT);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;">Decomposição interna</div>
+        <div style="font-size:10px;color:var(--txT);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;">Composição do frete · impacto tributário</div>
         ${[
-          ["Taxa fixa cidade", fmt(r.cidade.fixa), "var(--txM)"],
+          ["Taxa fixa cidade",               fmt(r.cidade.fixa),    "var(--txM)"],
           [`Carga (${S.peso}kg × R$${fmtN(RKG,2)})`, fmt(S.peso*RKG), "var(--txM)"],
-          ["Entrega zona", fmt(r.zona.taxa), "var(--txM)"],
-          ["Frete cobrado", fmt(r.cobrado), "#4ade80"],
-          ["(-) Impostos LP 5,93%", fmt(imp), "#fb923c"],
-          ["(-) Custo rateado", fmt(custo), "#f87171"],
-          ["Lucro", fmt(lucro), lucro>0?"var(--ac)":"#f87171", true],
-          ["Margem", fmtN(margem,1)+"%", margem>=25?"#4ade80":"#f87171", true],
+          ["Entrega zona",                   fmt(r.zona.taxa),      "var(--txM)"],
+          ["Frete cobrado",                  fmt(r.cobrado),        "#4ade80"],
+          ["(-) ICMS 9,6% (crédito outorg.)",fmt(icms),            "#fb923c"],
+          ["(-) LP 5,93%",                   fmt(imp),              "#fb923c"],
+          ["Receita líquida",       fmt(recLiq),       "var(--ac)", true],
+          ["Margem bruta s/ tributos", fmtN(margBruta,1)+"%", margBruta>=80?"#4ade80":margBruta>=70?"#eab308":"#f87171", true],
         ].map(([l,v,cor,bold])=>`
           <div class="dre-row">
             <span class="dre-label">${l}</span>
@@ -313,58 +322,61 @@ function renderDia() {
   const pesoTotal = S.clientes.reduce((a,x)=>a+x.peso,0);
   const linhas = S.clientes.map(x => {
     const r = calcFrete(x.peso, x.cidade, x.zona);
+    const icms = r.cobrado*ICMS_EFET;
     const imp = r.cobrado*LP;
     const custo = pesoTotal>0?(x.peso/pesoTotal)*cd:0;
-    const lucro = r.cobrado-imp-custo;
+    const lucro = r.cobrado-imp-icms-custo;
     const margem = r.cobrado>0?(lucro/r.cobrado)*100:0;
-    return {...x,...r,imp,custo,lucro,margem};
+    return {...x,...r,icms,imp,custo,lucro,margem};
   });
-  const recTotal = linhas.reduce((a,l)=>a+l.cobrado,0);
-  const impTotal = recTotal*LP;
-  const lucroTotal = linhas.reduce((a,l)=>a+l.lucro,0);
-  const margemDia = recTotal>0?(lucroTotal/recTotal)*100:0;
+  const recTotal    = linhas.reduce((a,l)=>a+l.cobrado,0);
+  const icmsTotal   = linhas.reduce((a,l)=>a+l.icms,0);
+  const impTotal    = linhas.reduce((a,l)=>a+l.imp,0);
+  const tribTotal   = icmsTotal + impTotal;
+  const lucroTotal  = linhas.reduce((a,l)=>a+l.lucro,0);
+  const margemDia   = recTotal>0?(lucroTotal/recTotal)*100:0;
 
   return `
     <div class="grid5" style="margin-bottom:20px;">
       ${[
-        ["Peso total", pesoTotal+" kg", "#60a5fa"],
-        ["Receita", fmt(recTotal), "#4ade80"],
-        ["Impostos", fmt(impTotal), "#fb923c"],
-        ["Lucro", fmt(lucroTotal), lucroTotal>0?"var(--ac)":"#f87171"],
-        ["Margem", fmtN(margemDia,1)+"%", margemDia>=25?"#4ade80":"#f87171"],
+        ["Peso total",  pesoTotal+" kg",          "#60a5fa"],
+        ["Receita",     fmt(recTotal),             "#4ade80"],
+        ["Tributos",    fmt(tribTotal),            "#fb923c"],
+        ["Lucro",       fmt(lucroTotal),           lucroTotal>0?"var(--ac)":"#f87171"],
+        ["Margem",      fmtN(margemDia,1)+"%",    margemDia>=25?"#4ade80":"#f87171"],
       ].map(([l,v,cor])=>`
         <div class="stat-card">
           <div class="stat-label">${l}</div>
-          <div class="stat-val" style="color:${cor}">${v}</div>
+          <div class="stat-val dia-stat" style="color:${cor}">${v}</div>
         </div>`).join("")}
     </div>
     ${linhas.map(l=>`
-      <div class="cliente-row">
+      <div class="cliente-row dia-row" data-id="${l.id}">
         <div class="cliente-grid">
           <div>
             <div class="field-label">Origem</div>
-            <select onchange="updCliente(${l.id},'cidade',this.value)">
+            <select data-action="cidade" data-id="${l.id}">
               ${CIDADES.map(c=>`<option value="${c.id}"${l.cidade===c.id?" selected":""}>${c.label}</option>`).join("")}
             </select>
           </div>
           <div>
             <div class="field-label">Entrega SP</div>
-            <select onchange="updCliente(${l.id},'zona',this.value)">
+            <select data-action="zona" data-id="${l.id}">
               ${ZONAS.map(z=>`<option value="${z.id}"${l.zona===z.id?" selected":""}>${z.label} — ${fmt(z.taxa)}</option>`).join("")}
             </select>
           </div>
           <div>
             <div class="field-label">Peso (kg)</div>
             <input type="number" min="1" max="900" value="${l.peso}"
-              onchange="updCliente(${l.id},'peso',Math.max(1,Number(this.value)))">
+              data-action="peso" data-id="${l.id}">
           </div>
           <button class="rem-btn" onclick="remCliente(${l.id})">✕</button>
         </div>
         <div class="cliente-footer">
-          <span style="font-family:monospace;font-size:16px;font-weight:700;color:var(--ac)">${fmt(l.cobrado)}</span>
-          <span style="font-size:11px;color:var(--txG)">R$ ${fmtN(l.efetKg,2)}/kg</span>
-          <span style="font-size:11px;color:var(--txG)">Margem: <span style="color:${l.margem>=25?"#4ade80":"#f87171"}">${fmtN(l.margem,1)}%</span></span>
-          <span style="font-size:11px;color:var(--txG)">Lucro: <span style="color:var(--txS)">${fmt(l.lucro)}</span></span>
+          <span class="dia-frete" style="font-family:monospace;font-size:16px;font-weight:700;color:var(--ac)">${fmt(l.cobrado)}</span>
+          <span class="dia-efet" style="font-size:11px;color:var(--txG)">R$ ${fmtN(l.efetKg,2)}/kg</span>
+          <span style="font-size:11px;color:var(--txG)">Margem: <span class="dia-marg" style="color:${l.margem>=25?"#4ade80":"#f87171"}">${fmtN(l.margem,1)}%</span></span>
+          <span style="font-size:11px;color:var(--txG)">Lucro: <span class="dia-lucro" style="color:var(--txS)">${fmt(l.lucro)}</span></span>
         </div>
       </div>`).join("")}
     <button class="add-btn" onclick="addCliente()">+ Adicionar cliente</button>
@@ -412,12 +424,13 @@ function renderDesconto() {
   const r = calcFrete(S.dcPeso, S.dcCidade, S.dcZona);
   const tabela = r.cobrado;
   const custoRat = S.dcPesoDia>0?(S.dcPeso/S.dcPesoDia)*cd:0;
-  const imp = S.dcProposta*LP;
-  const lucro = S.dcProposta-imp-custoRat;
+  const icms = S.dcProposta*ICMS_EFET;
+const imp = S.dcProposta*LP;
+  const lucro = S.dcProposta-imp-icms-custoRat;
   const margem = S.dcProposta>0?(lucro/S.dcProposta)*100:0;
   const desconto = tabela-S.dcProposta;
   const descPct = tabela>0?(desconto/tabela)*100:0;
-  const minViavel = custoRat/(1-LP);
+  const minViavel = custoRat/(1-LP-ICMS_EFET);
   const margTab = tabela>0?((tabela-tabela*LP-custoRat)/tabela)*100:0;
   const contra = Math.max(minViavel*1.15, r.cidade.fixa+r.zona.taxa+50);
   const descMaxPct = tabela>0?Math.max(0,(1-contra/tabela)*100):0;
@@ -445,12 +458,14 @@ function renderDesconto() {
               onclick="pickDc('zona','${z.id}')">${z.label}</button>`).join("")}
           </div>
         </div>
-        ${sliderHTML("dcPeso","Peso do envio (kg)",1,900,1,S.dcPeso,null,fmtKg)}
+        ${numInput("dcPeso","Peso do envio (kg)",S.dcPeso,null,"kg")}
       </div>
       ${secHead("Proposta do cliente")}
-      <div class="sec-body">${sliderHTML("dcProposta","Valor proposto",50,2000,5,S.dcProposta,null,fmt)}</div>
+      <div class="sec-body">
+        ${numInput("dcProposta","Valor proposto pelo cliente",S.dcProposta,null,"brl")}
+      </div>
       ${secHead("Base de rateio")}
-      <div class="sec-body">${sliderHTML("dcPesoDia","Peso total do dia (kg)",50,900,25,S.dcPesoDia,null,fmtKg)}</div>
+      <div class="sec-body">${numInput("dcPesoDia","Peso total estimado do dia",S.dcPesoDia,"para ratear custo fixo","kg")}</div>
     </div>
     <div>
       <div class="verdict-box" style="background:${cor}11;border:1px solid ${cor}66;">
@@ -475,7 +490,8 @@ function renderDesconto() {
         <div style="font-size:10px;color:var(--txT);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;">Se aceitar</div>
         ${[
           ["Proposta", fmt(S.dcProposta), "#4ade80"],
-          ["(-) Impostos LP 5,93%", fmt(imp), "#fb923c"],
+          ["(-) ICMS 9,6% (c/ crédito outorgado)", fmt(icms), "#fb923c"],
+          ["(-) LP 5,93%", fmt(imp), "#fb923c"],
           ["(-) Custo rateado", fmt(custoRat), "#f87171"],
           ["Lucro", fmt(lucro), lucro>=0?"var(--ac)":"#f87171", true],
           ["Margem", fmtN(margem,1)+"%", margem>=20?"#4ade80":margem>=0?"#fb923c":"#f87171", true],
@@ -519,13 +535,13 @@ function renderCustos() {
     </div>
     ${secHead("Custos Operacionais · 340 km/dia")}
     <div class="sec-body">
-      ${sliderHTML("diesel","Preço do diesel",5.0,8.5,0.1,S.diesel,null,v=>"R$ "+fmtN(v,2)+"/l")}
-      ${sliderHTML("motorista","Diária do motorista",100,400,25,S.motorista,null,fmt)}
-      ${sliderHTML("segVei","Seguro veículo/dia",10,60,5,S.segVei,"~R$400/mês ÷ 20 dias",fmt)}
-      ${sliderHTML("manut","Manutenção/dia",15,100,5,S.manut,"340km × R$0,12",fmt)}
-      ${sliderHTML("parcela","Parcela veículo/dia",50,250,10,S.parcela,"parcela ÷ 20 dias",fmt)}
-      ${sliderHTML("pedagios","Pedágios/dia",0,200,10,S.pedagios,"Castelo Branco",fmt)}
-      ${sliderHTML("segCarga","Seguro de carga/dia",5,80,1,S.segCarga,"RCTR-C + RC-DC · obrigatório ANTT",fmt)}
+      ${numInput("diesel","Preço do diesel",S.diesel,null,"rpl")}
+      ${numInput("motorista","Diária do motorista",S.motorista,null,"brl")}
+      ${numInput("segVei","Seguro veículo/dia",S.segVei,"~R$400/mês ÷ 20 dias","brl")}
+      ${numInput("manut","Manutenção/dia",S.manut,"340km × R$0,12","brl")}
+      ${numInput("parcela","Parcela veículo/dia",S.parcela,"parcela ÷ 20 dias","brl")}
+      ${numInput("pedagios","Pedágios/dia",S.pedagios,"Castelo Branco","brl")}
+      ${numInput("segCarga","Seguro de carga/dia",S.segCarga,"RCTR-C + RC-DC · obrigatório ANTT","brl")}
     </div>
     <div style="background:var(--bgC);border:1px solid var(--bd);border-radius:8px;padding:16px 16px 10px;">
       <div style="font-size:12px;font-weight:700;color:var(--ac);margin-bottom:12px;text-transform:uppercase;">DRE do Dia</div>
@@ -547,8 +563,37 @@ function renderCustos() {
         <span style="font-family:monospace;color:var(--ac);font-weight:700;font-size:16px">${fmt(cd)}</span>
       </div>
     </div>
+    <div style="margin-top:16px;background:var(--bgC);border:1px solid var(--bd);border-radius:10px;padding:16px 20px;">
+      <div style="font-size:12px;font-weight:700;color:var(--ac);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:14px;">Break-even diário</div>
+      ${(()=>{
+        const cd = custoDia();
+        const beTrib   = cd / (1 - LP - ICMS_EFET);          // cobre custo + tributos
+        const be20     = cd / (1 - LP - ICMS_EFET - 0.20);   // + 20% margem
+        const be25     = cd / (1 - LP - ICMS_EFET - 0.25);   // + 25% margem
+        const be30     = cd / (1 - LP - ICMS_EFET - 0.30);   // + 30% margem
+        return `
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:14px;">
+          ${[
+            ["Zero margem",  fmt(beTrib), "só cobre custo + tributos", "#fb923c"],
+            ["Margem 20%",   fmt(be20),   "mínimo recomendado",         "#eab308"],
+            ["Margem 25%",   fmt(be25),   "meta operacional",           "#4ade80"],
+            ["Margem 30%",   fmt(be30),   "meta ideal",                 "#60a5fa"],
+          ].map(([l,v,h,cor])=>`
+            <div style="background:var(--bgI);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;">
+              <div style="font-size:10px;color:var(--txG);text-transform:uppercase;margin-bottom:2px">${l}</div>
+              <div style="font-family:monospace;font-size:16px;font-weight:700;color:${cor}">${v}</div>
+              <div style="font-size:10px;color:var(--txT);margin-top:2px">${h}</div>
+            </div>`).join("")}
+        </div>
+        <div style="font-size:11px;color:var(--txF);line-height:1.7;">
+          Receita mínima/dia necessária para cobrir custo operacional + ICMS 9,6% + LP 5,93%.
+          Para atingir a meta de 25%, com frete médio de R$ 250/envio, você precisa de
+          <strong style="color:var(--ac)">${Math.ceil(be25/250)} envios/dia</strong>.
+        </div>`;
+      })()}
+    </div>
     <div style="margin-top:14px;padding:12px 16px;background:color-mix(in srgb,var(--ac) 5%,transparent);border:1px solid color-mix(in srgb,var(--ac) 13%,transparent);border-radius:8px;font-size:11px;color:var(--txG);line-height:1.8;">
-      <strong style="color:var(--txS)">Fórmula:</strong> Frete = taxa fixa cidade + (peso × R$ ${fmtN(RKG,2)}/kg) + entrega zona · LP 5,93% sobre receita · ICMS transporte não incluído.
+      <strong style="color:var(--txS)">Fórmula:</strong> Frete = taxa fixa cidade + (peso × R$ ${fmtN(RKG,2)}/kg) + entrega zona · LP 5,93% + ICMS 9,6% (crédito outorgado 20% · Decreto SP 70.292/2025 · válido até 31/12/2026).
     </div>`;
 }
 
@@ -556,31 +601,36 @@ function renderCustos() {
 function render() {
   const map = { simulador:renderSimulador, dia:renderDia, tabela:renderTabela, desconto:renderDesconto, custos:renderCustos };
   document.getElementById("content").innerHTML = map[S.tab]();
-  // sliders
-  document.querySelectorAll("input[type=range]").forEach(el => {
-    el.addEventListener("input", function() { onSlider(this.id, this.value); });
+  attachEvents();
+}
+
+function attachEvents() {
+  document.querySelectorAll(".num-input[data-state]").forEach(el => {
+    el.addEventListener("input", function() { onNumInput(this.dataset.state, this.value); });
   });
+
 }
 
 // ── EVENTOS ────────────────────────────────────────────────────────────────
-function onSlider(id, val) {
-  const v = parseFloat(val);
-  const fmtMap = {
-    peso: fmtKg, diesel: w=>"R$ "+fmtN(w,2)+"/l",
-    motorista:fmt, segVei:fmt, manut:fmt, parcela:fmt, pedagios:fmt, segCarga:fmt,
-    dcPeso:fmtKg, dcProposta:fmt, dcPesoDia:fmtKg,
-  };
-  const stateMap = {
-    peso:"peso", diesel:"diesel", motorista:"motorista", segVei:"segVei",
-    manut:"manut", parcela:"parcela", pedagios:"pedagios", segCarga:"segCarga",
-    dcPeso:"dcPeso", dcProposta:"dcProposta", dcPesoDia:"dcPesoDia",
-  };
-  if (stateMap[id]) S[stateMap[id]] = v;
-  const el = document.getElementById(id+"_val");
-  if (el && fmtMap[id]) el.textContent = fmtMap[id](v);
-  // re-render resultado
+const STATE_MAP = {
+  peso:"peso", diesel:"diesel", motorista:"motorista", segVei:"segVei",
+  manut:"manut", parcela:"parcela", pedagios:"pedagios", segCarga:"segCarga",
+  dcPeso:"dcPeso", dcProposta:"dcProposta", dcPesoDia:"dcPesoDia",
+};
+
+function onNumInput(id, val) {
+  const v = parseFloat(val) || 0;
+  if (STATE_MAP[id] !== undefined) S[STATE_MAP[id]] = v;
   const map = { simulador:renderSimulador, dia:renderDia, desconto:renderDesconto, custos:renderCustos };
-  if (map[S.tab]) document.getElementById("content").innerHTML = map[S.tab]();
+  if (map[S.tab]) {
+    const focused = document.activeElement ? (document.activeElement.id || document.activeElement.dataset.state) : null;
+    document.getElementById("content").innerHTML = map[S.tab]();
+    attachEvents();
+    if (focused) {
+      const el = document.getElementById(focused) || document.querySelector(`[data-state="${focused}"]`);
+      if (el) { el.focus(); el.select(); }
+    }
+  }
 }
 
 function pick(prefix, val) {
@@ -607,7 +657,46 @@ function remCliente(id) {
 
 function updCliente(id, key, val) {
   S.clientes = S.clientes.map(x => x.id===id ? {...x,[key]:typeof val==="string"?val:Number(val)} : x);
-  render();
+  // Re-render only the summary cards (not the full DOM, preserves select focus)
+  const linhas = (() => {
+    const cd = custoDia();
+    const pesoTotal = S.clientes.reduce((a,x)=>a+x.peso,0);
+    return S.clientes.map(x => {
+      const r = calcFrete(x.peso, x.cidade, x.zona);
+      const icms = r.cobrado*ICMS_EFET;
+      const imp  = r.cobrado*LP;
+      const custo = pesoTotal>0?(x.peso/pesoTotal)*cd:0;
+      const lucro = r.cobrado-imp-icms-custo;
+      const margem = r.cobrado>0?(lucro/r.cobrado)*100:0;
+      return {...x,...r,icms,imp,custo,lucro,margem};
+    });
+  })();
+  const recTotal  = linhas.reduce((a,l)=>a+l.cobrado,0);
+  const icmsTotal = linhas.reduce((a,l)=>a+l.icms,0);
+  const impTotal  = linhas.reduce((a,l)=>a+l.imp,0);
+  const tribTotal = icmsTotal+impTotal;
+  const lucroTotal= linhas.reduce((a,l)=>a+l.lucro,0);
+  const margemDia = recTotal>0?(lucroTotal/recTotal)*100:0;
+  // Update summary cards
+  const vals = [
+    S.clientes.reduce((a,x)=>a+x.peso,0)+" kg",
+    fmt(recTotal), fmt(tribTotal), fmt(lucroTotal),
+    fmtN(margemDia,1)+"%"
+  ];
+  const colors = ["#60a5fa","#4ade80","#fb923c",lucroTotal>0?"var(--ac)":"#f87171",margemDia>=25?"#4ade80":"#f87171"];
+  document.querySelectorAll(".dia-stat").forEach((el,i) => {
+    if (vals[i] !== undefined) { el.textContent = vals[i]; el.style.color = colors[i]; }
+  });
+  // Update each row footer
+  linhas.forEach(l => {
+    const row = document.querySelector(`.dia-row[data-id="${l.id}"]`);
+    if (!row) return;
+    const spans = row.querySelectorAll(".dia-frete,.dia-efet,.dia-marg,.dia-lucro");
+    if (spans[0]) spans[0].textContent = fmt(l.cobrado);
+    if (spans[1]) spans[1].textContent = "R$ "+fmtN(l.efetKg,2)+"/kg";
+    if (spans[2]) { spans[2].textContent = fmtN(l.margem,1)+"%"; spans[2].style.color = l.margem>=25?"#4ade80":"#f87171"; }
+    if (spans[3]) spans[3].textContent = fmt(l.lucro);
+  });
 }
 
 // ── TABS ───────────────────────────────────────────────────────────────────
@@ -624,6 +713,16 @@ document.getElementById("themeBtn").addEventListener("click", () => {
   S.dark = !S.dark;
   document.body.className = S.dark ? "dark" : "lite";
   document.getElementById("themeBtn").textContent = S.dark ? "☀ Claro" : "☾ Escuro";
+});
+
+// ── EVENT DELEGATION para Simular Dia ─────────────────────────────────────
+document.getElementById("content").addEventListener("change", function(e) {
+  const el = e.target;
+  const action = el.dataset.action;
+  const id = parseInt(el.dataset.id);
+  if (!action || !id) return;
+  if (action === "peso") updCliente(id, "peso", Math.max(1, Number(el.value)));
+  else updCliente(id, action, el.value);
 });
 
 // ── INIT ───────────────────────────────────────────────────────────────────
