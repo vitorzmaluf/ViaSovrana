@@ -67,6 +67,11 @@ if (quoteForm) {
 
     const data = Object.fromEntries(new FormData(quoteForm).entries());
 
+    if (!data["cf-turnstile-response"]) {
+      formMessage.textContent = "Confirme a verificação de segurança antes de enviar.";
+      return;
+    }
+
     const message = buildWhatsappMessage(data);
     const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`;
 
@@ -96,6 +101,10 @@ if (quoteForm) {
     } catch (error) {
       console.error(error);
       formMessage.textContent = "Não foi possível enviar o e-mail agora. Abrindo WhatsApp para contato direto.";
+    } finally {
+      if (window.turnstile) {
+        window.turnstile.reset();
+      }
     }
 
     if (whatsappWindow) {
