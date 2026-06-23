@@ -22,3 +22,14 @@ export const COLOR = Object.freeze({
   yellow: '#facc15',
   accent: 'var(--accent)',
 });
+
+// Cores por zona de entrega
+export const ZONE_COLOR = Object.freeze({
+  zona1: '#4ade80',
+  zona2: '#60a5fa',
+  zona3: '#fb923c',
+  zona4: '#f87171',
+
+  // fallback
+  default: 'var(--accent)'
+});
