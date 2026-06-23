@@ -7,6 +7,9 @@
 // export const API_BASE = 'http://localhost:3000'; // API_BASE para rodar local
 export const API_BASE = 'https://darkorchid-bison-969577.hostingersite.com'; // API_BASE para rodar no servidor hostinger
 
+export const AUTH_TOKEN_KEY = 'via_sovrana_internal_token';
+
+
 // Cores semânticas usadas nos renders
 export const COLOR = Object.freeze({
   green:  '#4ade80',

@@ -29,3 +29,8 @@ Landing page estática para a transportadora Via Sovrana.
 - Laranja: #FF6B1A
 - Branco: #FFFFFF
 - Cinza claro: #F5F7FB
+
+
+## Ajuste aplicado
+
+Removidos os parâmetros de versão/cache-buster dos imports e publicações do front.

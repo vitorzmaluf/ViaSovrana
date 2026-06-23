@@ -4,22 +4,54 @@
  * Todos os outros módulos importam daqui — nunca fazem fetch diretamente.
  */
 
-import { API_BASE } from '../config/constants.js';
+import { API_BASE, AUTH_TOKEN_KEY } from '../config/constants.js';
 
 class ApiService {
   async #call(method, path, body = null) {
+    const token = localStorage.getItem(AUTH_TOKEN_KEY);
+
     const opts = {
       method,
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json'
+      }
     };
-    if (body) opts.body = JSON.stringify(body);
 
-    const res  = await fetch(`${API_BASE}${path}`, opts);
-    const data = await res.json();
+    if (token) {
+      opts.headers.Authorization = `Bearer ${token}`;
+    }
+
+    if (body) {
+      opts.body = JSON.stringify(body);
+    }
+
+    const res = await fetch(`${API_BASE}${path}`, opts);
+
+    const raw = await res.text();
+    let data = null;
+
+    try {
+      data = raw ? JSON.parse(raw) : null;
+    } catch {
+      data = null;
+    }
 
     if (!res.ok) {
-      const msg = data?.error?.message || `Erro ${res.status}`;
-      throw new ApiError(msg, data?.error?.code, data?.error?.details, res.status);
+      const msg =
+        data?.message ||
+        data?.error?.message ||
+        `Erro ${res.status}`;
+
+      if (res.status === 401) {
+        localStorage.removeItem(AUTH_TOKEN_KEY);
+      }
+
+      throw new ApiError(
+        msg,
+        data?.error?.code,
+        data?.error?.details,
+        res.status
+      );
     }
 
     return data;
@@ -38,7 +70,11 @@ class ApiService {
    * @param {number} pesoKg
    */
   quoteFreight(cityKey, zoneKey, pesoKg) {
-    return this.#call('POST', '/api/freight/quote', { cityKey, zoneKey, pesoKg });
+    return this.#call('POST', '/api/freight/quote', {
+      cityKey,
+      zoneKey,
+      pesoKg
+    });
   }
 
   // ── Simular dia ────────────────────────────────────────────────────────
@@ -47,7 +83,10 @@ class ApiService {
    * @param {object|null} custos
    */
   simulateDay(clientes, custos = null) {
-    return this.#call('POST', '/api/freight/simulate-day', { clientes, custos });
+    return this.#call('POST', '/api/freight/simulate-day', {
+      clientes,
+      custos
+    });
   }
 
   // ── Tabela ─────────────────────────────────────────────────────────────
@@ -58,7 +97,12 @@ class ApiService {
   // ── Proposta cliente ───────────────────────────────────────────────────
   analyzeProposal(cityKey, zoneKey, pesoKg, valorProposto, pesoTotalDia, custos = null) {
     return this.#call('POST', '/api/freight/proposal', {
-      cityKey, zoneKey, pesoKg, valorProposto, pesoTotalDia, custos,
+      cityKey,
+      zoneKey,
+      pesoKg,
+      valorProposto,
+      pesoTotalDia,
+      custos
     });
   }
 
@@ -75,11 +119,12 @@ class ApiService {
 export class ApiError extends Error {
   constructor(message, code, details = [], status = 500) {
     super(message);
-    this.name    = 'ApiError';
-    this.code    = code;
+    this.name = 'ApiError';
+    this.code = code;
     this.details = details;
-    this.status  = status;
+    this.status = status;
   }
 }
 
 export const api = new ApiService();
+
