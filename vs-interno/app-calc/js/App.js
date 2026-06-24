@@ -10,7 +10,7 @@ import { API_BASE, AUTH_TOKEN_KEY } from './config/constants.js';
 
 class App {
   async init() {
-    this.#initTheme();
+    this.initTheme();
 
     const content = document.getElementById('content');
 
@@ -22,18 +22,18 @@ class App {
       `;
     }
 
-    const isAuthenticated = await this.#checkAuth();
+    const isAuthenticated = await this.checkAuth();
 
     if (!isAuthenticated) {
-      this.#clearSession();
-      this.#renderLogin();
+      this.clearSession();
+      this.renderLogin();
       return;
     }
 
-    this.#startApp();
+    this.startApp();
   }
 
-  async #checkAuth() {
+  async checkAuth() {
     const token = localStorage.getItem(AUTH_TOKEN_KEY);
 
     if (!token) {
@@ -61,7 +61,7 @@ class App {
     }
   }
 
-  async #login(username, password) {
+  async login(username, password) {
     const response = await fetch(`${API_BASE}/api/auth/login`, {
       method: 'POST',
       headers: {
@@ -85,22 +85,20 @@ class App {
     return data;
   }
 
-  #clearSession() {
+  clearSession() {
     localStorage.removeItem(AUTH_TOKEN_KEY);
-
-    // Limpeza de possíveis chaves antigas usadas em testes anteriores.
     localStorage.removeItem('authToken');
     localStorage.removeItem('token');
     localStorage.removeItem('via_sovrana_token');
   }
 
-  #logout() {
-    this.#clearSession();
+  logout() {
+    this.clearSession();
     location.reload();
   }
 
-  #startApp() {
-    this.#buildTabs();
+  startApp() {
+    this.buildTabs();
 
     const content = document.getElementById('content');
     const tabsEl = document.getElementById('tabs');
@@ -112,7 +110,7 @@ class App {
     router.init(content, tabsEl);
   }
 
-  #buildTabs() {
+  buildTabs() {
     const tabsEl = document.getElementById('tabs');
 
     if (!tabsEl) return;
@@ -143,12 +141,12 @@ class App {
 
     if (logoutBtn) {
       logoutBtn.addEventListener('click', () => {
-        this.#logout();
+        this.logout();
       });
     }
   }
 
-  #renderLogin() {
+  renderLogin() {
     const tabsEl = document.getElementById('tabs');
     const content = document.getElementById('content');
 
@@ -257,19 +255,19 @@ class App {
         loginSubmitBtn.textContent = 'Entrando...';
         loginMessage.textContent = 'Validando acesso...';
 
-        await this.#login(username, password);
+        await this.login(username, password);
 
-        const isAuthenticated = await this.#checkAuth();
+        const isAuthenticated = await this.checkAuth();
 
         if (!isAuthenticated) {
           throw new Error('Token salvo, mas a sessão não foi validada.');
         }
 
         loginMessage.textContent = '';
-        this.#startApp();
+        this.startApp();
       } catch (error) {
         console.error(error);
-        this.#clearSession();
+        this.clearSession();
         loginMessage.textContent = error.message || 'Usuário ou senha inválidos.';
       } finally {
         loginSubmitBtn.disabled = false;
@@ -278,7 +276,7 @@ class App {
     });
   }
 
-  #initTheme() {
+  initTheme() {
     const btn = document.getElementById('themeBtn');
     const s = state.get();
 
