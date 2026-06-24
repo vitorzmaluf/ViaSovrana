@@ -15,6 +15,7 @@ export const API_BASE = 'https://darkorchid-bison-969577.hostingersite.com';
 
 export const AUTH_TOKEN_KEY = 'via_sovrana_internal_token';
 
+
 // Cores semânticas usadas nos renders
 export const COLOR = Object.freeze({
   green: '#4ade80',
