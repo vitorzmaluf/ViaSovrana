@@ -6,15 +6,26 @@
 import { router } from './ui/Router.js';
 import { state } from './services/AppState.js';
 import { TABS } from './config/tabs.js';
-import { authService } from './services/AuthService.js';
+import { API_BASE, AUTH_TOKEN_KEY } from './config/constants.js';
 
 class App {
   async init() {
     this.#initTheme();
 
+    const content = document.getElementById('content');
+
+    if (content) {
+      content.innerHTML = `
+        <section style="padding: 32px; opacity: .75;">
+          Validando acesso...
+        </section>
+      `;
+    }
+
     const isAuthenticated = await this.#checkAuth();
 
     if (!isAuthenticated) {
+      this.#clearSession();
       this.#renderLogin();
       return;
     }
@@ -23,20 +34,69 @@ class App {
   }
 
   async #checkAuth() {
-    const token = authService.getToken();
+    const token = localStorage.getItem(AUTH_TOKEN_KEY);
 
     if (!token) {
       return false;
     }
 
     try {
-      const session = await authService.me();
-      return Boolean(session?.ok);
+      const response = await fetch(`${API_BASE}/api/auth/me`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        return false;
+      }
+
+      const data = await response.json().catch(() => null);
+
+      return Boolean(data?.ok);
     } catch (error) {
       console.error('Erro ao validar sessão:', error);
-      authService.logout();
       return false;
     }
+  }
+
+  async #login(username, password) {
+    const response = await fetch(`${API_BASE}/api/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ username, password })
+    });
+
+    const data = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      throw new Error(data?.message || 'Usuário ou senha inválidos.');
+    }
+
+    if (!data?.token) {
+      throw new Error('Login realizado, mas o servidor não retornou token.');
+    }
+
+    localStorage.setItem(AUTH_TOKEN_KEY, data.token);
+
+    return data;
+  }
+
+  #clearSession() {
+    localStorage.removeItem(AUTH_TOKEN_KEY);
+
+    // Limpeza de possíveis chaves antigas usadas em testes anteriores.
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('token');
+    localStorage.removeItem('via_sovrana_token');
+  }
+
+  #logout() {
+    this.#clearSession();
+    location.reload();
   }
 
   #startApp() {
@@ -45,11 +105,17 @@ class App {
     const content = document.getElementById('content');
     const tabsEl = document.getElementById('tabs');
 
+    if (content) {
+      content.innerHTML = '';
+    }
+
     router.init(content, tabsEl);
   }
 
   #buildTabs() {
     const tabsEl = document.getElementById('tabs');
+
+    if (!tabsEl) return;
 
     tabsEl.innerHTML = `
       ${TABS.map(t =>
@@ -77,7 +143,7 @@ class App {
 
     if (logoutBtn) {
       logoutBtn.addEventListener('click', () => {
-        authService.logout();
+        this.#logout();
       });
     }
   }
@@ -89,6 +155,8 @@ class App {
     if (tabsEl) {
       tabsEl.innerHTML = '';
     }
+
+    if (!content) return;
 
     content.innerHTML = `
       <section
@@ -148,6 +216,7 @@ class App {
 
           <button
             type="submit"
+            id="loginSubmitBtn"
             style="
               width: 100%;
               border: 0;
@@ -169,6 +238,7 @@ class App {
 
     const loginForm = document.getElementById('loginForm');
     const loginMessage = document.getElementById('loginMessage');
+    const loginSubmitBtn = document.getElementById('loginSubmitBtn');
 
     loginForm.addEventListener('submit', async (event) => {
       event.preventDefault();
@@ -183,15 +253,27 @@ class App {
       }
 
       try {
+        loginSubmitBtn.disabled = true;
+        loginSubmitBtn.textContent = 'Entrando...';
         loginMessage.textContent = 'Validando acesso...';
 
-        await authService.login(username, password);
+        await this.#login(username, password);
+
+        const isAuthenticated = await this.#checkAuth();
+
+        if (!isAuthenticated) {
+          throw new Error('Token salvo, mas a sessão não foi validada.');
+        }
 
         loginMessage.textContent = '';
         this.#startApp();
       } catch (error) {
         console.error(error);
+        this.#clearSession();
         loginMessage.textContent = error.message || 'Usuário ou senha inválidos.';
+      } finally {
+        loginSubmitBtn.disabled = false;
+        loginSubmitBtn.textContent = 'Entrar';
       }
     });
   }
