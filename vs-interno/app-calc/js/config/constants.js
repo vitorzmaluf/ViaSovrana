@@ -11,7 +11,7 @@ const IS_LOCAL =
 //   ? 'http://localhost:3000'
 //   : 'https://darkorchid-bison-969577.hostingersite.com';
 
-export const API_BASE = 'https://darkorchid-bison-969577.hostingersite.com'
+export const API_BASE = 'https://darkorchid-bison-969577.hostingersite.com';
 
 export const AUTH_TOKEN_KEY = 'via_sovrana_internal_token';
 
