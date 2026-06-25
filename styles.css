@@ -1203,14 +1203,6 @@ textarea {
     margin-top: 8px;
   }
 
-  .btn-restrito {
-    display: none !important;
-  }
-
-  .mobile-cta {
-    display: inline-flex !important;
-  }
-
   .nav-links .btn-small {
     width: 100%;
     justify-content: center;
