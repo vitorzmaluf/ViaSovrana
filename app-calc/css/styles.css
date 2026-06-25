@@ -41,6 +41,23 @@ body {
 .header-meta  { font-size: 10px; color: var(--txT); text-transform: uppercase; letter-spacing: .15em; margin-bottom: 3px; }
 .header-title { font-size: 24px; font-weight: 800; color: var(--ac); }
 .header-sub   { color: var(--txG); font-size: 12px; margin: 4px 0 0; }
+.header-actions { display: flex; align-items: center; gap: 10px; }
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--bdM);
+  background: var(--bgC);
+  color: var(--txS);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+}
+.back-btn:hover {
+  background: var(--bdM);
+}
 .theme-btn {
   padding: 8px 14px; border-radius: 8px; border: 1px solid var(--bdM);
   background: var(--bgC); color: var(--txS); cursor: pointer;
