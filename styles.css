@@ -294,6 +294,24 @@ h3 {
   box-shadow: 0 10px 22px rgba(255, 107, 26, .24);
 }
 
+.btn-restrito {
+  min-height: 42px;
+  padding: 0 16px;
+  border: 1px solid rgba(21, 32, 51, .14);
+  background: rgba(255, 255, 255, .92);
+  color: var(--navy);
+  font-size: .85rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  box-shadow: 0 10px 22px rgba(16, 41, 79, .08);
+}
+
+.btn-restrito:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: translateY(-1px);
+}
+
 .btn-whatsapp {
   background: #1fb65b;
   color: var(--white);
