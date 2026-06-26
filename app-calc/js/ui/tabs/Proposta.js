@@ -111,8 +111,8 @@ export default class Proposta extends BaseTab {
       <div class="dre-card" style="margin-bottom:14px;">
         <div class="dre-card-title">Se aceitar esta proposta</div>
         ${dreRow('Proposta recebida', fmt(r.valorProposto), COLOR.green)}
-        ${dreRow('(−) ICMS 9,6% (crédito outorgado)', fmt(r.frete.tributos * (0.096 / 0.1553)), COLOR.orange)}
-        ${dreRow('(−) LP 5,93%', fmt(r.frete.tributos * (0.0593 / 0.1553)), COLOR.orange)}
+        ${dreRow('(−) ICMS', fmt(r.frete.icms), COLOR.orange)}
+        ${dreRow('(−) LP', fmt(r.frete.lp), COLOR.orange)}
         ${dreRow('(−) Custo rateado', fmt(r.custoRateado), COLOR.red)}
         ${dreRow('Lucro', fmt(r.lucroSeProposta), r.lucroSeProposta >= 0 ? 'var(--ac)' : COLOR.red, true)}
         ${dreRow('Margem', fmtPct(r.margemSeProposta), r.margemSeProposta >= 0.2 ? COLOR.green : r.margemSeProposta >= 0 ? COLOR.orange : COLOR.red, true)}

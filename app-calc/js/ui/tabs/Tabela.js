@@ -3,13 +3,13 @@
  * Aba 3 — Tabela completa de preços por cidade × zona × peso.
  */
 
-import { BaseTab }                   from '../BaseTab.js';
+import { BaseTab } from '../BaseTab.js';
 import { loadingSkeleton, errorBox } from '../components.js';
-import { api }                       from '../../services/ApiService.js';
-import { state }                     from '../../services/AppState.js';
-import { refs }                      from '../../services/ReferenceStore.js';
-import { fmt }                       from '../../utils/format.js';
-import { ZONE_COLOR }                from '../../config/constants.js';
+import { api } from '../../services/ApiService.js';
+import { state } from '../../services/AppState.js';
+import { refs } from '../../services/ReferenceStore.js';
+import { fmt, fmtN } from '../../utils/format.js';
+import { ZONE_COLOR } from '../../config/constants.js';
 
 export default class Tabela extends BaseTab {
 
@@ -24,10 +24,16 @@ export default class Tabela extends BaseTab {
     const s = state.get('tabela');
 
     if (s.loading) return loadingSkeleton(8);
-    if (s.error)   return errorBox(s.error);
+    if (s.error) return errorBox(s.error);
     if (!s.result) return '';
 
     const { pesos, rows } = s.result;
+
+    const config = state.get('calculatorConfig');
+    const pricePerKg = Number(config.parameters?.pricePerKg || 0);
+    const pricePerKgLabel = pricePerKg > 0
+      ? `R$ ${fmtN(pricePerKg, 2)}/kg`
+      : 'R$/kg configurado';
 
     const byCity = {};
     for (const row of rows) {
@@ -37,8 +43,7 @@ export default class Tabela extends BaseTab {
 
     return `
       <div class="tabela-formula">
-        Fórmula: <strong style="color:var(--ac)">taxa fixa + peso × R$ 1,54/kg + entrega zona</strong>
-        · Calibrado com dados reais de mercado
+        Fórmula: taxa fixa + peso × ${pricePerKgLabel} + entrega zona · Calibrado com dados reais de mercado
       </div>
 
       ${Object.values(byCity).map(cidade => `
@@ -59,8 +64,8 @@ export default class Tabela extends BaseTab {
               </thead>
               <tbody>
                 ${cidade.zonas.map(zona => {
-                  const cor = ZONE_COLOR[zona.zoneKey] || 'var(--ac)';
-                  return `
+      const cor = ZONE_COLOR[zona.zoneKey] || 'var(--ac)';
+      return `
                     <tr>
                       <td>
                         <span style="color:${cor};font-weight:700">
@@ -70,7 +75,7 @@ export default class Tabela extends BaseTab {
                       </td>
                       ${pesos.map(p => `<td>${fmt(zona.precos[p])}</td>`).join('')}
                     </tr>`;
-                }).join('')}
+    }).join('')}
               </tbody>
             </table>
           </div>
