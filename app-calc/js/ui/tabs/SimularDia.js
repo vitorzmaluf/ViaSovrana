@@ -185,7 +185,13 @@ export default class SimularDia extends BaseTab {
     this.render();
 
     try {
-      const result = await api.simulateDay(s.clientes, s.custos);
+      const costState = state.get('custos');
+      const custos =
+        costState.params && Object.keys(costState.params).length
+          ? costState.params
+          : s.custos;
+
+      const result = await api.simulateDay(s.clientes, custos);
       state.set('simularDia', { loading: false, result });
     } catch (err) {
       state.set('simularDia', { loading: false, error: err.message });

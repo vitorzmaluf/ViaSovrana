@@ -3,21 +3,23 @@
  * Aba 4 — Análise de proposta de preço recebida de um cliente.
  */
 
-import { BaseTab }                         from '../BaseTab.js';
-import { secHead, cityButtons, zoneButtons,
-         numInput, dreRow, loadingSkeleton,
-         errorBox }                        from '../components.js';
-import { api }                             from '../../services/ApiService.js';
-import { state }                           from '../../services/AppState.js';
-import { refs }                            from '../../services/ReferenceStore.js';
-import { fmt, fmtN, fmtPct, parsePtBR }   from '../../utils/format.js';
-import { COLOR }                           from '../../config/constants.js';
+import { BaseTab } from '../BaseTab.js';
+import {
+  secHead, cityButtons, zoneButtons,
+  numInput, dreRow, loadingSkeleton,
+  errorBox
+} from '../components.js';
+import { api } from '../../services/ApiService.js';
+import { state } from '../../services/AppState.js';
+import { refs } from '../../services/ReferenceStore.js';
+import { fmt, fmtN, fmtPct, parsePtBR } from '../../utils/format.js';
+import { COLOR } from '../../config/constants.js';
 
 const VERDICT_CONFIG = {
-  accept:    { cor: COLOR.green,  icon: '✓', label: 'Aceite — valor acima da tabela'         },
-  viable:    { cor: COLOR.yellow, icon: '~', label: 'Viável — dentro da margem mínima'       },
-  negotiate: { cor: COLOR.orange, icon: '!', label: 'Negocie — abaixo do recomendado'        },
-  refuse:    { cor: COLOR.red,    icon: '✗', label: 'Recuse — não cobre custos operacionais' },
+  accept: { cor: COLOR.green, icon: '✓', label: 'Aceite — valor acima da tabela' },
+  viable: { cor: COLOR.yellow, icon: '~', label: 'Viável — dentro da margem mínima' },
+  negotiate: { cor: COLOR.orange, icon: '!', label: 'Negocie — abaixo do recomendado' },
+  refuse: { cor: COLOR.red, icon: '✗', label: 'Recuse — não cobre custos operacionais' },
 };
 
 export default class Proposta extends BaseTab {
@@ -61,9 +63,9 @@ export default class Proposta extends BaseTab {
         </div>
 
         <div id="pr-result">
-          ${s.loading ? loadingSkeleton(8)    : ''}
-          ${s.error   ? errorBox(s.error)     : ''}
-          ${s.result  ? this.#renderResult(s) : this.#renderPlaceholder()}
+          ${s.loading ? loadingSkeleton(8) : ''}
+          ${s.error ? errorBox(s.error) : ''}
+          ${s.result ? this.#renderResult(s) : this.#renderPlaceholder()}
         </div>
       </div>`;
   }
@@ -77,10 +79,10 @@ export default class Proposta extends BaseTab {
   }
 
   #renderResult(s) {
-    const r  = s.result;
+    const r = s.result;
     const vc = VERDICT_CONFIG[r.verdito] ?? VERDICT_CONFIG.refuse;
 
-    const desconto    = r.frete.bruto - r.valorProposto;
+    const desconto = r.frete.bruto - r.valorProposto;
     const descontoPct = r.frete.bruto > 0 ? desconto / r.frete.bruto : 0;
 
     return `
@@ -94,11 +96,11 @@ export default class Proposta extends BaseTab {
 
         <div class="grid2x2">
           ${[
-            ['Proposta',     fmt(r.valorProposto),  COLOR.muted],
-            ['Nossa tabela', fmt(r.frete.bruto),    COLOR.blue],
-            ['Diferença',    (desconto >= 0 ? '−' : '+') + fmt(Math.abs(desconto)), desconto > 0 ? COLOR.red : COLOR.green],
-            ['Desconto',     fmtPct(descontoPct),   desconto > 0 ? COLOR.red : COLOR.green],
-          ].map(([l, v, c]) => `
+        ['Proposta', fmt(r.valorProposto), COLOR.muted],
+        ['Nossa tabela', fmt(r.frete.bruto), COLOR.blue],
+        ['Diferença', (desconto >= 0 ? '−' : '+') + fmt(Math.abs(desconto)), desconto > 0 ? COLOR.red : COLOR.green],
+        ['Desconto', fmtPct(descontoPct), desconto > 0 ? COLOR.red : COLOR.green],
+      ].map(([l, v, c]) => `
             <div style="background:var(--bgI);border-radius:6px;padding:10px 12px;">
               <div style="font-size:10px;color:var(--txG);text-transform:uppercase;margin-bottom:3px">${l}</div>
               <div style="font-family:monospace;font-size:15px;font-weight:700;color:${c}">${v}</div>
@@ -108,21 +110,21 @@ export default class Proposta extends BaseTab {
 
       <div class="dre-card" style="margin-bottom:14px;">
         <div class="dre-card-title">Se aceitar esta proposta</div>
-        ${dreRow('Proposta recebida',                  fmt(r.valorProposto),  COLOR.green)}
+        ${dreRow('Proposta recebida', fmt(r.valorProposto), COLOR.green)}
         ${dreRow('(−) ICMS 9,6% (crédito outorgado)', fmt(r.frete.tributos * (0.096 / 0.1553)), COLOR.orange)}
-        ${dreRow('(−) LP 5,93%',                       fmt(r.frete.tributos * (0.0593 / 0.1553)), COLOR.orange)}
-        ${dreRow('(−) Custo rateado',                  fmt(r.custoRateado),   COLOR.red)}
-        ${dreRow('Lucro',  fmt(r.lucroSeProposta),  r.lucroSeProposta  >= 0   ? 'var(--ac)' : COLOR.red, true)}
+        ${dreRow('(−) LP 5,93%', fmt(r.frete.tributos * (0.0593 / 0.1553)), COLOR.orange)}
+        ${dreRow('(−) Custo rateado', fmt(r.custoRateado), COLOR.red)}
+        ${dreRow('Lucro', fmt(r.lucroSeProposta), r.lucroSeProposta >= 0 ? 'var(--ac)' : COLOR.red, true)}
         ${dreRow('Margem', fmtPct(r.margemSeProposta), r.margemSeProposta >= 0.2 ? COLOR.green : r.margemSeProposta >= 0 ? COLOR.orange : COLOR.red, true)}
       </div>
 
       <div class="dre-card">
         <div class="dre-card-title">Referências</div>
         ${[
-          ['Nossa tabela',            fmt(r.frete.bruto), 'margem máxima',           COLOR.blue],
-          ['Mínimo absoluto',         fmt(r.minimoAbs),   'só cobre custo + impostos', COLOR.orange],
-          ['Mínimo recomendado +15%', fmt(r.minimoRec),   'margem mínima aceitável', 'var(--ac)'],
-        ].map(([l, v, h, c]) => `
+        ['Nossa tabela', fmt(r.frete.bruto), 'margem máxima', COLOR.blue],
+        ['Mínimo absoluto', fmt(r.minimoAbs), 'só cobre custo + impostos', COLOR.orange],
+        ['Mínimo recomendado +15%', fmt(r.minimoRec), 'margem mínima aceitável', 'var(--ac)'],
+      ].map(([l, v, h, c]) => `
           <div class="ref-row">
             <div>
               <div class="ref-row-label">${l}</div>
@@ -164,9 +166,9 @@ export default class Proposta extends BaseTab {
     }, { signal });
 
     const inputMap = {
-      'pr-peso':     'pesoKg',
+      'pr-peso': 'pesoKg',
       'pr-proposta': 'valorProposto',
-      'pr-pesoDia':  'pesoTotalDia',
+      'pr-pesoDia': 'pesoTotalDia',
     };
     container.addEventListener('input', e => {
       const id = e.target.dataset.inputId;
@@ -181,9 +183,19 @@ export default class Proposta extends BaseTab {
     this.#updateResult();
 
     try {
+      const costState = state.get('custos');
+      const custos =
+        costState.params && Object.keys(costState.params).length
+          ? costState.params
+          : null;
+
       const result = await api.analyzeProposal(
-        s.cityKey, s.zoneKey, s.pesoKg,
-        s.valorProposto, s.pesoTotalDia
+        s.cityKey,
+        s.zoneKey,
+        s.pesoKg,
+        s.valorProposto,
+        s.pesoTotalDia,
+        custos
       );
       state.set('proposta', { loading: false, result });
     } catch (err) {
@@ -197,9 +209,9 @@ export default class Proposta extends BaseTab {
     const el = this.$('#pr-result');
     if (!el) return;
     const s = state.get('proposta');
-    if (s.loading) { el.innerHTML = loadingSkeleton(8);    return; }
-    if (s.error)   { el.innerHTML = errorBox(s.error);     return; }
-    if (s.result)  { el.innerHTML = this.#renderResult(s); return; }
+    if (s.loading) { el.innerHTML = loadingSkeleton(8); return; }
+    if (s.error) { el.innerHTML = errorBox(s.error); return; }
+    if (s.result) { el.innerHTML = this.#renderResult(s); return; }
     el.innerHTML = this.#renderPlaceholder();
   }
 }

@@ -119,6 +119,10 @@ class ApiService {
   getCostDefaults() {
     return this.call('GET', '/api/costs/defaults');
   }
+
+  saveCostDefaults(params = {}) {
+    return this.call('PUT', '/api/costs/defaults', params);
+  }
 }
 
 export class ApiError extends Error {
