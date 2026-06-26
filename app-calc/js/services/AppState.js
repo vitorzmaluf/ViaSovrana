@@ -9,52 +9,61 @@ class AppState {
     // Tema
     dark: true,
 
+    calculatorConfig: {
+      route: null,
+      parameters: null,
+      costs: null,
+      tableWeights: [],
+      loading: false,
+      error: null,
+    },
+
     // Envio único
     envioUnico: {
       cityKey: 'sorocaba',
       zoneKey: 'z1',
-      pesoKg:  100,
-      result:  null,
+      pesoKg: 100,
+      result: null,
       loading: false,
-      error:   null,
+      error: null,
     },
 
     // Simular dia
     simularDia: {
       clientes: [],
-      nextId:   1,
-      result:   null,
-      loading:  false,
-      error:    null,
+      nextId: 1,
+      result: null,
+      loading: false,
+      error: null,
       // Custos customizados (null = usa o padrão do servidor)
       custos: null,
     },
 
     // Tabela de preços
     tabela: {
-      result:  null,
+      result: null,
       loading: false,
-      error:   null,
+      error: null,
     },
 
     // Proposta cliente
     proposta: {
-      cityKey:       'sorocaba',
-      zoneKey:       'z1',
-      pesoKg:        100,
+      cityKey: 'sorocaba',
+      zoneKey: 'z1',
+      pesoKg: 100,
       valorProposto: 200,
-      pesoTotalDia:  350,
-      result:        null,
-      loading:       false,
-      error:         null,
+      pesoTotalDia: 350,
+      result: null,
+      loading: false,
+      error: null,
     },
 
     // Custos
     custos: {
-      params:  {},      // campos editados pelo usuário (vazios = usa padrão)
-      result:  null,
+      params: {},      // campos editados pelo usuário (vazios = usa padrão)
+      result: null,
       loading: false,
-      error:   null,
+      error: null,
     },
   };
 

@@ -68,6 +68,10 @@ class ApiService {
     return this.call('GET', '/api/freight/references');
   }
 
+  getCalculatorConfig() {
+    return this.call('GET', '/api/calculator/config');
+  }
+
   // ── Envio único ────────────────────────────────────────────────────────
   /**
    * @param {string} cityKey

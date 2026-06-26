@@ -7,6 +7,7 @@ import { router } from './ui/Router.js';
 import { state } from './services/AppState.js';
 import { TABS } from './config/tabs.js';
 import { API_BASE, AUTH_TOKEN_KEY } from './config/constants.js';
+import { api } from './services/ApiService.js';
 
 class App {
   async init() {
@@ -30,7 +31,34 @@ class App {
       return;
     }
 
-    this.startApp();
+    await this.startApp();
+  }
+
+  async loadCalculatorConfig() {
+    state.set('calculatorConfig', {
+      loading: true,
+      error: null,
+    });
+
+    try {
+      const config = await api.getCalculatorConfig();
+
+      state.setSilent('calculatorConfig', {
+        route: config.route || null,
+        parameters: config.parameters || null,
+        costs: config.costs || null,
+        tableWeights: config.tableWeights || [],
+        loading: false,
+        error: null,
+      });
+    } catch (error) {
+      console.error('Erro ao carregar configuração da calculadora:', error);
+
+      state.setSilent('calculatorConfig', {
+        loading: false,
+        error: error.message || 'Erro ao carregar configuração da calculadora.',
+      });
+    }
   }
 
   async checkAuth() {
@@ -97,7 +125,9 @@ class App {
     location.reload();
   }
 
-  startApp() {
+  async startApp() {
+    await this.loadCalculatorConfig();
+
     this.buildTabs();
 
     const content = document.getElementById('content');
@@ -117,8 +147,8 @@ class App {
 
     tabsEl.innerHTML = `
       ${TABS.map(t =>
-        `<button class="tab-btn" data-tab="${t.id}">${t.label}</button>`
-      ).join('')}
+      `<button class="tab-btn" data-tab="${t.id}">${t.label}</button>`
+    ).join('')}
 
       <button
         type="button"
@@ -264,7 +294,7 @@ class App {
         }
 
         loginMessage.textContent = '';
-        this.startApp();
+        await this.startApp();
       } catch (error) {
         console.error(error);
         this.clearSession();
