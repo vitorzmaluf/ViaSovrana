@@ -138,6 +138,12 @@ class App {
     }
 
     router.init(content, tabsEl);
+    const cfg = state.get('calculatorConfig');
+    const pkg = cfg.parameters?.pricePerKg;
+    const sub = document.getElementById('headerSub');
+    if (sub && pkg) {
+      sub.textContent = `R$ ${pkg.toFixed(2).replace('.', ',')}/kg + taxa fixa por cidade · coleta no dia · entrega D+1`;
+    }
   }
 
   buildTabs() {
